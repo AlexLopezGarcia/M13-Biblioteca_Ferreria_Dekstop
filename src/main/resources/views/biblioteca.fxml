@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.BibliotecaController">
+    <top>
+        <HBox spacing="10" styleClass="hbox">
+            <Button text="Registrar Devolución" styleClass="button" />
+            <Button text="Registrar Préstamo" styleClass="button" />
+            <Button text="Eliminar Libro" styleClass="button" />
+            <Button text="Modificar Libro" styleClass="button" />
+            <Button text="Añadir Libro" styleClass="button" />
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button text="Logarse" styleClass="button-dark" />
+            <Button text="Registrar Usuario" styleClass="button-dark" />
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="10" style="-fx-padding: 20px;">
+            <Label text="Biblioteca" styleClass="title" />
+            <GridPane hgap="10" vgap="10">
+                <Label text="ISBN:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="isbnField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Título:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                <TextField fx:id="tituloField" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+                <Label text="Autor:" GridPane.rowIndex="0" GridPane.columnIndex="4"/>
+                <TextField fx:id="autorField" GridPane.rowIndex="0" GridPane.columnIndex="5"/>
+
+                <Button text="Buscar" fx:id="buscarButton" GridPane.rowIndex="0" GridPane.columnIndex="6"/>
+
+                <Label text="Editorial:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="editorialField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Categoría:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                <ComboBox fx:id="categoriaComboBox" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+            </GridPane>
+
+            <TableView fx:id="tablaLibros">
+                <columns>
+                    <TableColumn text="ISBN" fx:id="colISBN"/>
+                    <TableColumn text="Título" fx:id="colTitulo"/>
+                    <TableColumn text="Autor" fx:id="colAutor"/>
+                    <TableColumn text="Editorial" fx:id="colEditorial"/>
+                    <TableColumn text="Categoría" fx:id="colCategoria"/>
+                    <TableColumn text="Estado de Uso" fx:id="colEstado"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+</BorderPane>
