@@ -1,9 +1,14 @@
 package cat.ferreria.dekstop;
 
+import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+
+import java.util.Arrays;
+
+import static java.util.Arrays.stream;
 
 public class BibliotecaController {
     @FXML private TextField isbnField;
@@ -22,6 +27,7 @@ public class BibliotecaController {
     @FXML private TableColumn<Libro, String> colEstado;
 
     private ObservableList<Libro> libros = FXCollections.observableArrayList();
+    private ApiClient apiClient = new ApiClient();
 
     @FXML
     public void initialize() {
@@ -38,7 +44,38 @@ public class BibliotecaController {
 
         tablaLibros.setItems(libros);
 
+        cargarLibrosDesdeApi();
+
         buscarButton.setOnAction(event -> buscarLibros());
+    }
+
+    private void cargarLibrosDesdeApi() {
+        String jsonHistorial = apiClient.fetchHistorial();
+        if (jsonHistorial != null) {
+            Gson gson = new Gson();
+
+
+            HistorialDTO[] historialArray = gson.fromJson(jsonHistorial, HistorialDTO[].class);
+            libros.clear();
+
+            for (HistorialDTO historialDTO : historialArray) {
+                String jsonLibro = apiClient.fetchLibroByIsbn(historialDTO.getIsbn());
+                if (jsonLibro != null) {
+                    LibroDTO libroDTO = gson.fromJson(jsonLibro, LibroDTO.class);
+                    Libro libro = new Libro(
+                            libroDTO.getIsbn(),
+                            libroDTO.getTitulo(),
+                            libroDTO.getAutor(),
+                            libroDTO.getEditorial(),
+                            libroDTO.getCategoria(),
+                            libroDTO.getEstado()
+                    );
+                    libros.add(libro);
+                }
+            }
+        } else {
+            System.out.println("Error al obtener el historial de la API");
+        }
     }
 
     private void buscarLibros() {
