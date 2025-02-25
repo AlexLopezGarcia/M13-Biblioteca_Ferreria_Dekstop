@@ -2,7 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.BibliotecaController">
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.BibliotecaController">
     <top>
         <HBox spacing="10" style="-fx-background-color: #558C01; -fx-padding: 10px;">
             <Button text="Registrar Devolución" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />

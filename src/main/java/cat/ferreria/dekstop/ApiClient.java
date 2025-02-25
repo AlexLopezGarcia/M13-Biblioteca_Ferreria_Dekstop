@@ -1,4 +1,4 @@
-package org.example;
+package cat.ferreria.dekstop;
 
 import java.net.HttpURLConnection;
 import java.io.BufferedReader;

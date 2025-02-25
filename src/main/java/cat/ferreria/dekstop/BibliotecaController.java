@@ -1,4 +1,4 @@
-package org.example;
+package cat.ferreria.dekstop;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
