@@ -3,7 +3,13 @@ package cat.ferreria.dekstop;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class BibliotecaController {
     @FXML private TextField isbnField;
@@ -42,6 +48,21 @@ public class BibliotecaController {
     }
 
     private void buscarLibros() {
+
         System.out.println("Buscando libros con ISBN: " + isbnField.getText());
+    }
+    @FXML
+    private void abrirRegistroUsuario() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/registrar_usuario.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Registro de Usuario");
+            stage.setScene(new Scene(root, 600, 400));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
