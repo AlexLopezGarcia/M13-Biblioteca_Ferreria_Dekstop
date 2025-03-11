@@ -22,7 +22,15 @@
         <Label layoutX="126.0" layoutY="273.0" prefHeight="17.0" prefWidth="72.0" text="Contraseña" />
 
         <Button fx:id="registrarButton" layoutX="108.0" layoutY="331.0" mnemonicParsing="false" prefHeight="25.0"
-                prefWidth="384.0" text="Registrar Usuario" textFill="#121312" onAction="#registrarUsuario"/>
+                prefWidth="384.0" text="Registrar Usuario" textFill="white" onAction="#registrarUsuario">
+            <style>
+                -fx-background-color: #2e7d32; /* Color verde */
+                -fx-font-weight: bold;
+                -fx-font-size: 14px;
+                -fx-border-radius: 5px;
+                -fx-background-radius: 5px;
+            </style>
+        </Button>
 
         <Label layoutX="198.0" layoutY="33.0" prefHeight="17.0" prefWidth="239.0" text="Formulario Registro">
             <font>
@@ -31,4 +39,5 @@
         </Label>
     </children>
 </Pane>
+
 
