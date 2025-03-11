@@ -5,10 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-
-import java.util.Arrays;
-
-import static java.util.Arrays.stream;
+import javafx.stage.Stage;
 
 public class BibliotecaController {
     @FXML private TextField isbnField;
@@ -17,6 +14,8 @@ public class BibliotecaController {
     @FXML private TextField editorialField;
     @FXML private ComboBox<String> categoriaComboBox;
     @FXML private Button buscarButton;
+    @FXML private Button btnAñadirLibro;
+    @FXML private Button btnModificarLibro;
 
     @FXML private TableView<Libro> tablaLibros;
     @FXML private TableColumn<Libro, String> colISBN;
@@ -47,17 +46,16 @@ public class BibliotecaController {
         cargarLibrosDesdeApi();
 
         buscarButton.setOnAction(event -> buscarLibros());
+        btnAñadirLibro.setOnAction(event -> openPantallaCrearLibro());
+        btnModificarLibro.setOnAction(actionEvent -> openPantallaEditarLibro());
     }
 
     private void cargarLibrosDesdeApi() {
         String jsonHistorial = apiClient.fetchHistorial();
         if (jsonHistorial != null) {
             Gson gson = new Gson();
-
-
             HistorialDTO[] historialArray = gson.fromJson(jsonHistorial, HistorialDTO[].class);
             libros.clear();
-
             for (HistorialDTO historialDTO : historialArray) {
                 String jsonLibro = apiClient.fetchLibroByIsbn(historialDTO.getIsbn());
                 if (jsonLibro != null) {
@@ -80,5 +78,29 @@ public class BibliotecaController {
 
     private void buscarLibros() {
         System.out.println("Buscando libros con ISBN: " + isbnField.getText());
+    }
+
+    private void openPantallaCrearLibro() {
+        PantallaCrearLibro pantallaCrearLibro = new PantallaCrearLibro(libro -> {
+            libros.add(libro);
+        });
+        try {
+            pantallaCrearLibro.show();
+        } catch(Exception e) {
+            e.printStackTrace();
+            System.err.println("Error al abrir la pantalla de crear libro");
+        }
+    }
+
+    private void openPantallaEditarLibro() {
+        PantallaModificarLibro pantallaModificarLibro = new PantallaModificarLibro(libro -> {
+            libros.set(libros.indexOf(libro), libro);
+        });
+        try {
+            pantallaModificarLibro.show();
+        } catch(Exception e) {
+            e.printStackTrace();
+            System.err.println("Error al abrir la pantalla de editar libro");
+        }
     }
 }

@@ -10,6 +10,7 @@ import java.net.URL;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 
 public class Libro {
     private final StringProperty isbn;
@@ -19,7 +20,7 @@ public class Libro {
     private final StringProperty categoria;
     private final StringProperty estado;
 
-    public Libro(String isbn, String titulo, String autor, String editorial, String categoria, String estado) {
+    public Libro(String isbn, String titulo, String autor, String editorial ,String categoria, String estado) {
         this.isbn = new SimpleStringProperty(isbn);
         this.titulo = new SimpleStringProperty(titulo);
         this.autor = new SimpleStringProperty(autor);

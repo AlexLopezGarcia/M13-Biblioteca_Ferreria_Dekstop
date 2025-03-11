@@ -8,8 +8,8 @@
             <Button text="Registrar Devolución" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
             <Button text="Registrar Préstamo" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
             <Button text="Eliminar Libro" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
-            <Button text="Modificar Libro" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
-            <Button text="Añadir Libro" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
+            <Button fx:id="btnModificarLibro" text="Modificar Libro" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
+            <Button fx:id="btnAñadirLibro" text="Añadir Libro" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
             <Pane HBox.hgrow="ALWAYS"/>
             <Button text="Logarse" style="-fx-background-color: #444; -fx-text-fill: white;" />
             <Button text="Registrar Usuario" style="-fx-background-color: #444; -fx-text-fill: white;" />
