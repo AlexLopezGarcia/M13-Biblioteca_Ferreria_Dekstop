@@ -1,11 +1,12 @@
 package cat.ferreria.dekstop;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
-import javax.swing.JOptionPane;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import java.util.regex.Pattern;
 
 public class RegistrarUsuarioController {
@@ -15,6 +16,13 @@ public class RegistrarUsuarioController {
     @FXML private TextField correoField;
     @FXML private PasswordField contrasenaField;
     @FXML private Button registrarButton;
+
+    @FXML private TableView<Usuario> tablaUsuarios;
+    @FXML private TableColumn<Usuario, String> colDni;
+    @FXML private TableColumn<Usuario, String> colNombre;
+    @FXML private TableColumn<Usuario, String> colCorreo;
+
+    private ObservableList<Usuario> usuarios = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
@@ -48,17 +56,27 @@ public class RegistrarUsuarioController {
         }
 
         if (errores.length() > 0) {
-            JOptionPane.showMessageDialog(null, "Errores encontrados:\n" + errores, "Error", JOptionPane.ERROR_MESSAGE);
+            // Mostrar un Alert en lugar de JOptionPane
+            Alert alerta = new Alert(AlertType.ERROR);
+            alerta.setTitle("Error en el registro");
+            alerta.setHeaderText("Se han encontrado errores");
+            alerta.setContentText(errores.toString());
+            alerta.showAndWait(); // Mantiene el foco en la ventana actual
         } else {
             Usuario nuevoUsuario = new Usuario(dni, nombre, contrasena, correo);
-            JOptionPane.showMessageDialog(null, "Usuario registrado correctamente:\n" +
-                            "DNI: " + nuevoUsuario.getDni() + "\n" +
-                            "Nombre: " + nuevoUsuario.getNombre() + "\n" +
-                            "Correo: " + nuevoUsuario.getCorreoElectronico(),
-                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+            Alert exito = new Alert(AlertType.INFORMATION);
+            exito.setTitle("Registro exitoso");
+            exito.setHeaderText("Usuario registrado correctamente");
+            exito.setContentText("DNI: " + nuevoUsuario.getDni() + "\n" +
+                    "Nombre: " + nuevoUsuario.getNombre() + "\n" +
+                    "Correo: " + nuevoUsuario.getCorreoElectronico());
+            exito.showAndWait();
+
             limpiarCampos();
         }
     }
+
 
 
     private void limpiarCampos() {
@@ -68,6 +86,7 @@ public class RegistrarUsuarioController {
         contrasenaField.setText("");
     }
 }
+
 
 
 
