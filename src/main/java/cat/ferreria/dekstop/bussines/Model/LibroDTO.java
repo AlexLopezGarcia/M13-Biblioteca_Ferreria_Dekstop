@@ -8,11 +8,10 @@ public class LibroDTO {
     private String estado;
 
     // Constructor para creación de LibroDTO
-    public LibroDTO(String isbn, String titulo, String autor, String editorial ,String categoria, String estado) {
+    public LibroDTO(String isbn, String titulo, String autor,String categoria, String estado) {
         this.isbn = isbn;
         this.titulo = titulo;
         this.autor = autor;
-        this.editorial = editorial;
         this.categoria = categoria;
         this.estado = estado;
     }

@@ -1,5 +1,6 @@
 package cat.ferreria.dekstop;
 
+import cat.ferreria.dekstop.bussines.Model.Libro;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;

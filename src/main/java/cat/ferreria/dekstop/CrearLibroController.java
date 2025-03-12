@@ -1,5 +1,7 @@
 package cat.ferreria.dekstop;
 
+import cat.ferreria.dekstop.bussines.Model.Libro;
+import cat.ferreria.dekstop.bussines.Model.LibroDTO;
 import com.google.gson.Gson;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -13,13 +15,12 @@ public class CrearLibroController {
     @FXML private TextField txtAutor;
     @FXML private TextField txtEditorial;
     @FXML private TextField txtCategoria;
-    @FXML private TextField txtCantidad; // Opcional: para usarlo según necesidad
+    @FXML private TextField txtCantidad;
     @FXML private ComboBox<String> cmbEstadoUso;
     @FXML private Button btnGuardar;
 
     private ApiClient apiClient = new ApiClient();
 
-    // Callback para notificar que se ha creado un libro
     private Consumer<Libro> onLibroCreado;
 
     public void setOnLibroCreado(Consumer<Libro> onLibroCreado) {
@@ -39,14 +40,12 @@ public class CrearLibroController {
             return;
         }
 
-        // Verificar si el libro ya existe en la API
-        String existingLibro = apiClient.fetchLibroByIsbn(isbn);
-        if (existingLibro != null) {
+        String existLibro = apiClient.fetchLibroByIsbn(isbn);
+        if (existLibro != null) {
             showAlert("Error", "El libro con ISBN " + isbn + " ya existe en la base de datos");
             return;
         }
 
-        // Si no existe, proceder a guardar
         String titulo = txtTitulo.getText();
         String autor = txtAutor.getText();
         String editorial = txtEditorial.getText();
@@ -58,11 +57,11 @@ public class CrearLibroController {
             return;
         }
 
-        LibroDTO libroDTO = new LibroDTO(isbn, titulo, autor, editorial, categoria, estado);
+        LibroDTO libroDTO = new LibroDTO(isbn, titulo, autor, categoria, estado);
         String response = apiClient.createLibro(libroDTO);
 
         if (response != null) {
-            showAlert("Éxito", "El libro ha sido añadido correctamente");
+            showAlert("Exito", "El libro ha sido añadido correctamente");
             Stage stage = (Stage) btnGuardar.getScene().getWindow();
             stage.close();
         } else {

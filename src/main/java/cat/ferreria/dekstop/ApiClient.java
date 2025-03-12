@@ -1,5 +1,6 @@
 package cat.ferreria.dekstop;
 
+import cat.ferreria.dekstop.bussines.Model.LibroDTO;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -39,7 +40,7 @@ public class ApiClient {
             }
 
             int responseCode = conn.getResponseCode();
-            System.out.println("Código de respuesta: " + responseCode);
+            System.out.println("Codigo de respuesta: " + responseCode);
 
             if (responseCode != HttpURLConnection.HTTP_CREATED && responseCode != HttpURLConnection.HTTP_OK) {
                 BufferedReader errorReader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
