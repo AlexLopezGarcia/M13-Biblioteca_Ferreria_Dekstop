@@ -1,4 +1,4 @@
-package cat.ferreria.dekstop;
+package cat.ferreria.dekstop.bussines.Model;
 
 public class Usuario {
     private String dni;

@@ -1,6 +1,6 @@
 package cat.ferreria.dekstop.Controller;
 
-import cat.ferreria.dekstop.Usuario;
+import cat.ferreria.dekstop.bussines.Model.Usuario;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -21,7 +21,7 @@ public class RegistrarUsuarioController {
     @FXML private PasswordField contrasenaField;
     @FXML private Button registrarButton;
 
-    @FXML private TableView<cat.ferreria.dekstop.Usuario> tablaUsuarios;
+    @FXML private TableView<cat.ferreria.dekstop.bussines.Model.Usuario> tablaUsuarios;
     @FXML private TableColumn<Usuario, String> colDni;
     @FXML private TableColumn<Usuario, String> colNombre;
     @FXML private TableColumn<Usuario, String> colCorreo;
