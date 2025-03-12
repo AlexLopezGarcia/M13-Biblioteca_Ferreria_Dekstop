@@ -1,5 +1,6 @@
-package cat.ferreria.dekstop;
+package cat.ferreria.dekstop.Controller;
 
+import cat.ferreria.dekstop.Usuario;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -7,17 +8,20 @@ import javafx.scene.control.*;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+
+import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 public class RegistrarUsuarioController {
 
+    @FXML private Label labelDni, labelNombre, labelCorreo, labelContrasena, labelTitulo;
     @FXML private TextField dniField;
     @FXML private TextField nombreField;
     @FXML private TextField correoField;
     @FXML private PasswordField contrasenaField;
     @FXML private Button registrarButton;
 
-    @FXML private TableView<Usuario> tablaUsuarios;
+    @FXML private TableView<cat.ferreria.dekstop.Usuario> tablaUsuarios;
     @FXML private TableColumn<Usuario, String> colDni;
     @FXML private TableColumn<Usuario, String> colNombre;
     @FXML private TableColumn<Usuario, String> colCorreo;
@@ -26,6 +30,7 @@ public class RegistrarUsuarioController {
 
     @FXML
     public void initialize() {
+        ResourceBundle bundle = ResourceBundle.getBundle("bundles.messages");
         registrarButton.setOnAction(event -> registrarUsuario());
     }
 
@@ -76,9 +81,6 @@ public class RegistrarUsuarioController {
             limpiarCampos();
         }
     }
-
-
-
     private void limpiarCampos() {
         dniField.setText("");
         nombreField.setText("");

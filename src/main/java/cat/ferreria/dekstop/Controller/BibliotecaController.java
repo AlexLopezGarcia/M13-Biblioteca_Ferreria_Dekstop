@@ -83,11 +83,6 @@ public class BibliotecaController {
             System.out.println("Error al obtener el historial de la API");
         }
     }
-
-    private void buscarLibros() {
-
-        System.out.println("Buscando libros con ISBN: " + isbnField.getText());
-    }
     @FXML
     private void abrirRegistroUsuario() {
         try {
@@ -102,4 +97,10 @@ public class BibliotecaController {
             e.printStackTrace();
         }
     }
+
+    private void buscarLibros() {
+
+        System.out.println("Buscando libros con ISBN: " + isbnField.getText());
+    }
+
 }

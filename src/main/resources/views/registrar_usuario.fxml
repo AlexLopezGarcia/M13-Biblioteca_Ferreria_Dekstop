@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Font?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
-      xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.RegistrarUsuarioController">
+      xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.Controller.RegistrarUsuarioController">
 
     <children>
         <Label layoutX="162.0" layoutY="100.0" prefHeight="17.0" prefWidth="37.0" text="DNI:" />
@@ -17,7 +17,7 @@
         <TextField fx:id="nombreField" layoutX="198.0" layoutY="152.0" prefHeight="25.0" prefWidth="217.0" />
         <TextField fx:id="correoField" layoutX="198.0" layoutY="211.0" prefHeight="25.0" prefWidth="217.0" />
 
-        <Label layoutX="133.0" layoutY="156.0" prefHeight="17.0" prefWidth="66.0" text="Nombre:" />
+        <Label layoutX="133.0" layoutY="156.0" prefHeight="17.0" prefWidth="66.0" text="Nombre"/>
         <Label layoutX="90.0" layoutY="215.0" prefHeight="17.0" prefWidth="109.0" text="Correo Electrónico:" />
         <Label layoutX="126.0" layoutY="273.0" prefHeight="17.0" prefWidth="72.0" text="Contraseña" />
 
