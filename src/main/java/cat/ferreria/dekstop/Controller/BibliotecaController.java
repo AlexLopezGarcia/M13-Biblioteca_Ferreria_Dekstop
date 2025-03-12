@@ -1,5 +1,10 @@
-package cat.ferreria.dekstop;
+package cat.ferreria.dekstop.Controller;
 
+import cat.ferreria.dekstop.ApiClient;
+import cat.ferreria.dekstop.bussines.Model.HistorialDTO;
+import cat.ferreria.dekstop.bussines.Model.Libro;
+import cat.ferreria.dekstop.bussines.Model.LibroDTO;
+import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -10,6 +15,8 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+
+import static java.util.Arrays.stream;
 
 public class BibliotecaController {
     @FXML private TextField isbnField;
@@ -28,6 +35,7 @@ public class BibliotecaController {
     @FXML private TableColumn<Libro, String> colEstado;
 
     private ObservableList<Libro> libros = FXCollections.observableArrayList();
+    private ApiClient apiClient = new ApiClient();
 
     @FXML
     public void initialize() {
@@ -38,13 +46,42 @@ public class BibliotecaController {
         colISBN.setCellValueFactory(data -> data.getValue().isbnProperty());
         colTitulo.setCellValueFactory(data -> data.getValue().tituloProperty());
         colAutor.setCellValueFactory(data -> data.getValue().autorProperty());
-        colEditorial.setCellValueFactory(data -> data.getValue().editorialProperty());
         colCategoria.setCellValueFactory(data -> data.getValue().categoriaProperty());
         colEstado.setCellValueFactory(data -> data.getValue().estadoProperty());
 
         tablaLibros.setItems(libros);
 
+        cargarLibrosDesdeApi();
+
         buscarButton.setOnAction(event -> buscarLibros());
+    }
+
+    private void cargarLibrosDesdeApi() {
+        String jsonHistorial = apiClient.fetchHistorial();
+        if (jsonHistorial != null) {
+            Gson gson = new Gson();
+
+
+            HistorialDTO[] historialArray = gson.fromJson(jsonHistorial, HistorialDTO[].class);
+            libros.clear();
+
+            for (HistorialDTO historialDTO : historialArray) {
+                String jsonLibro = apiClient.fetchLibroByIsbn(historialDTO.getIsbn());
+                if (jsonLibro != null) {
+                    LibroDTO libroDTO = gson.fromJson(jsonLibro, LibroDTO.class);
+                    Libro libro = new Libro(
+                            libroDTO.getIsbn(),
+                            libroDTO.getTitulo(),
+                            libroDTO.getAutor(),
+                            libroDTO.getCategoria(),
+                            libroDTO.getEstado()
+                    );
+                    libros.add(libro);
+                }
+            }
+        } else {
+            System.out.println("Error al obtener el historial de la API");
+        }
     }
 
     private void buscarLibros() {

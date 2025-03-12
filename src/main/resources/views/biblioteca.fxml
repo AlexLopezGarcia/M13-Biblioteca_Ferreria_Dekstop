@@ -1,55 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.BibliotecaController">
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.Controller.BibliotecaController">
     <top>
         <HBox spacing="10" style="-fx-background-color: #558C01; -fx-padding: 10px;">
-            <Button text="Registrar Devolución" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
-            <Button text="Registrar Préstamo" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
-            <Button text="Eliminar Libro" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
-            <Button text="Modificar Libro" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
-            <Button text="Añadir Libro" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
-            <Pane HBox.hgrow="ALWAYS"/>
-            <Button text="Logarse" style="-fx-background-color: #444; -fx-text-fill: white;" />
-            <Button text="Registrar Usuario"
-                    style="-fx-background-color: #444; -fx-text-fill: white;"
-                    onAction="#abrirRegistroUsuario"/>
-
+            <Button text="Registrar Devolución" fx:id="btnRegistrarDevolucion"/>
+            <Button text="Registrar Préstamo" fx:id="btnRegistrarPrestamo"/>
+            <Button text="Eliminar Libro" fx:id="btnEliminar"/>
+            <Button text="Modificar Libro" fx:id="btnModificar"/>
+            <Button text="Añadir Libro" fx:id="btnAnyadir"/>
+            <Pane HBox.hgrow="ALWAYS" />
+            <Button text="Logarse" fx:id="btnLogarse"/>
+            <Button text="Registrar Usuario" fx:id="btnRegistrarUsuario"/>
         </HBox>
     </top>
 
     <center>
-        <VBox spacing="10" style="-fx-padding: 20px;">
-            <Label text="Biblioteca" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+        <VBox spacing="10">
             <GridPane hgap="10" vgap="10">
-                <Label text="ISBN:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <TextField fx:id="isbnField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <Label text="ISBN:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <TextField fx:id="isbnField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-                <Label text="Título:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-                <TextField fx:id="tituloField" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+                <Label text="Título:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                <TextField fx:id="tituloField" GridPane.columnIndex="3" GridPane.rowIndex="0" />
 
-                <Label text="Autor:" GridPane.rowIndex="0" GridPane.columnIndex="4"/>
-                <TextField fx:id="autorField" GridPane.rowIndex="0" GridPane.columnIndex="5"/>
+                <Label text="Autor:" GridPane.columnIndex="4" GridPane.rowIndex="0" />
+                <TextField fx:id="autorField" GridPane.columnIndex="5" GridPane.rowIndex="0" />
 
-                <Button text="Buscar" fx:id="buscarButton" GridPane.rowIndex="0" GridPane.columnIndex="6"/>
+                <Button fx:id="buscarButton" text="Buscar" GridPane.columnIndex="6" GridPane.rowIndex="0" />
 
-                <Label text="Editorial:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                <TextField fx:id="editorialField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-
-                <Label text="Categoría:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-                <ComboBox fx:id="categoriaComboBox" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+                <Label text="Categoría:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <ComboBox fx:id="categoriaComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <columnConstraints>
+               <ColumnConstraints />
+               <ColumnConstraints />
+               <ColumnConstraints />
+               <ColumnConstraints />
+               <ColumnConstraints />
+               <ColumnConstraints />
+               <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+               <RowConstraints />
+               <RowConstraints />
+            </rowConstraints>
+            <VBox.margin>
+               <Insets left="10.0" top="10.0" />
+            </VBox.margin>
             </GridPane>
 
             <TableView fx:id="tablaLibros" style="-fx-font-size: 14px;">
                 <columns>
-                    <TableColumn text="ISBN" fx:id="colISBN"/>
-                    <TableColumn text="Título" fx:id="colTitulo"/>
-                    <TableColumn text="Autor" fx:id="colAutor"/>
-                    <TableColumn text="Editorial" fx:id="colEditorial"/>
-                    <TableColumn text="Categoría" fx:id="colCategoria"/>
-                    <TableColumn text="Estado de Uso" fx:id="colEstado"/>
+                    <TableColumn fx:id="colISBN" text="ISBN" />
+                    <TableColumn fx:id="colTitulo" text="Título" />
+                    <TableColumn fx:id="colAutor" text="Autor" />
+                    <TableColumn fx:id="colCategoria" text="Categoría" />
+                    <TableColumn fx:id="colEstado" text="Estado de Uso" />
                 </columns>
+            <VBox.margin>
+               <Insets bottom="20.0" left="20.0" right="20.0" />
+            </VBox.margin>
             </TableView>
         </VBox>
     </center>
