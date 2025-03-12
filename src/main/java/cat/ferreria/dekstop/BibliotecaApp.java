@@ -11,7 +11,7 @@ public class BibliotecaApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/views/biblioteca.fxml"));
         Scene scene = new Scene(root, 800, 600);
-        //scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
         primaryStage.setTitle("Biblioteca");
         primaryStage.setScene(scene);
         primaryStage.show();
