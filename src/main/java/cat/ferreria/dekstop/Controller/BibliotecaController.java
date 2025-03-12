@@ -1,12 +1,14 @@
-package cat.ferreria.dekstop;
+package cat.ferreria.dekstop.Controller;
 
+import cat.ferreria.dekstop.ApiClient;
+import cat.ferreria.dekstop.bussines.Model.HistorialDTO;
+import cat.ferreria.dekstop.bussines.Model.Libro;
+import cat.ferreria.dekstop.bussines.Model.LibroDTO;
 import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-
-import java.util.Arrays;
 
 import static java.util.Arrays.stream;
 
@@ -38,7 +40,6 @@ public class BibliotecaController {
         colISBN.setCellValueFactory(data -> data.getValue().isbnProperty());
         colTitulo.setCellValueFactory(data -> data.getValue().tituloProperty());
         colAutor.setCellValueFactory(data -> data.getValue().autorProperty());
-        colEditorial.setCellValueFactory(data -> data.getValue().editorialProperty());
         colCategoria.setCellValueFactory(data -> data.getValue().categoriaProperty());
         colEstado.setCellValueFactory(data -> data.getValue().estadoProperty());
 
@@ -66,7 +67,6 @@ public class BibliotecaController {
                             libroDTO.getIsbn(),
                             libroDTO.getTitulo(),
                             libroDTO.getAutor(),
-                            libroDTO.getEditorial(),
                             libroDTO.getCategoria(),
                             libroDTO.getEstado()
                     );
