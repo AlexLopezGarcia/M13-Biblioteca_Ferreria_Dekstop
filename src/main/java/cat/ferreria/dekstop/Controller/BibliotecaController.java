@@ -1,6 +1,6 @@
 package cat.ferreria.dekstop.Controller;
 
-import cat.ferreria.dekstop.*;
+import cat.ferreria.dekstop.ApiClient;
 import cat.ferreria.dekstop.bussines.Model.HistorialDTO;
 import cat.ferreria.dekstop.bussines.Model.Libro;
 import cat.ferreria.dekstop.bussines.Model.LibroDTO;
@@ -19,8 +19,6 @@ public class BibliotecaController {
     @FXML private TextField editorialField;
     @FXML private ComboBox<String> categoriaComboBox;
     @FXML private Button buscarButton;
-    @FXML private Button btnAnyadir;
-    @FXML private Button btnModificar;
 
     @FXML private TableView<Libro> tablaLibros;
     @FXML private TableColumn<Libro, String> colISBN;
@@ -49,7 +47,6 @@ public class BibliotecaController {
 
         cargarLibrosDesdeApi();
 
-        btnAnyadir.setOnAction(event -> openPantallaCrearLibro());
         buscarButton.setOnAction(event -> buscarLibros());
     }
 
@@ -84,17 +81,4 @@ public class BibliotecaController {
     private void buscarLibros() {
         System.out.println("Buscando libros con ISBN: " + isbnField.getText());
     }
-
-    private void openPantallaCrearLibro() {
-        PantallaCrearLibro pantallaCrearLibro = new PantallaCrearLibro(libro -> {
-            libros.add(libro);
-        });
-        try {
-            pantallaCrearLibro.show();
-        } catch(Exception e) {
-            e.printStackTrace();
-            System.err.println("Error al abrir la pantalla de crear libro");
-        }
-    }
-
 }

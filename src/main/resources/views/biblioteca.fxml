@@ -34,22 +34,22 @@
 
                 <Label text="Categoría:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
                 <ComboBox fx:id="categoriaComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <columnConstraints>
-                    <ColumnConstraints />
-                    <ColumnConstraints />
-                    <ColumnConstraints />
-                    <ColumnConstraints />
-                    <ColumnConstraints />
-                    <ColumnConstraints />
-                    <ColumnConstraints />
-                </columnConstraints>
-                <rowConstraints>
-                    <RowConstraints />
-                    <RowConstraints />
-                </rowConstraints>
-                <VBox.margin>
-                    <Insets left="10.0" top="10.0" />
-                </VBox.margin>
+            <columnConstraints>
+               <ColumnConstraints />
+               <ColumnConstraints />
+               <ColumnConstraints />
+               <ColumnConstraints />
+               <ColumnConstraints />
+               <ColumnConstraints />
+               <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+               <RowConstraints />
+               <RowConstraints />
+            </rowConstraints>
+            <VBox.margin>
+               <Insets left="10.0" top="10.0" />
+            </VBox.margin>
             </GridPane>
 
             <TableView fx:id="tablaLibros" style="-fx-font-size: 14px;">
@@ -60,9 +60,9 @@
                     <TableColumn fx:id="colCategoria" text="Categoría" />
                     <TableColumn fx:id="colEstado" text="Estado de Uso" />
                 </columns>
-                <VBox.margin>
-                    <Insets bottom="20.0" left="20.0" right="20.0" />
-                </VBox.margin>
+            <VBox.margin>
+               <Insets bottom="20.0" left="20.0" right="20.0" />
+            </VBox.margin>
             </TableView>
         </VBox>
     </center>
