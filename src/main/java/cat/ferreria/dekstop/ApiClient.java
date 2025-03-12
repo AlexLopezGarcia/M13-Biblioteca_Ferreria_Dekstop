@@ -33,14 +33,12 @@ public class ApiClient {
             Gson gson = new Gson();
             String jsonInput = gson.toJson(libroDTO);
 
-            System.out.println("Creando libro: " + jsonInput);
 
             try (OutputStream os = conn.getOutputStream()) {
                 os.write(jsonInput.getBytes("UTF-8"));
             }
 
             int responseCode = conn.getResponseCode();
-            System.out.println("Codigo de respuesta: " + responseCode);
 
             if (responseCode != HttpURLConnection.HTTP_CREATED && responseCode != HttpURLConnection.HTTP_OK) {
                 BufferedReader errorReader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
@@ -49,7 +47,6 @@ public class ApiClient {
                 while ((errorLine = errorReader.readLine()) != null) {
                     errorResponse.append(errorLine);
                 }
-                System.err.println("Error en la API: " + errorResponse);
                 return null;
             }
 
@@ -61,10 +58,9 @@ public class ApiClient {
             }
             conn.disconnect();
 
-            System.out.println("Respuesta de la API: " + response);
             return response.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getLocalizedMessage());
             return null;
         }
     }
@@ -72,7 +68,6 @@ public class ApiClient {
 
     private String fetchData(String apiUrl) {
         try {
-            System.out.println("Llamando a la API con URL: " + apiUrl);
 
             URL url = new URL(apiUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -92,7 +87,7 @@ public class ApiClient {
             conn.disconnect();
             return response.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getLocalizedMessage());
             return null;
         }
     }

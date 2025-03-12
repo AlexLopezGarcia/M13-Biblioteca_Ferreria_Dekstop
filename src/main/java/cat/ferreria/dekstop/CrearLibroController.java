@@ -37,13 +37,13 @@ public class CrearLibroController {
     private void guardarLibro() {
         String isbn = this.txtISBN.getText();
         if (isbn.isEmpty()) {
-            showAlert("Error", "Debes ingresar un ISBN");
+            showAlert("Error", "Debes ingresar un ISBN"); //constante
             return;
         }
 
         String existLibro = apiClient.fetchLibroByIsbn(isbn);
         if (existLibro != null) {
-            showAlert("Error", "El libro con ISBN " + isbn + " ya existe en la base de datos");
+            showAlert("Error", "El libro con ISBN " + isbn + " ya existe en la base de datos"); //constante
             return;
         }
 
@@ -54,7 +54,7 @@ public class CrearLibroController {
         String estado = cmbEstadoUso.getSelectionModel().getSelectedItem();
 
         if (titulo.isEmpty() || autor.isEmpty() || categoria.isEmpty() || estado == null) {
-            showAlert("Error", "Completa todos los campos");
+            showAlert("Error", "Completa todos los campos"); //constante
             return;
         }
 
@@ -62,11 +62,11 @@ public class CrearLibroController {
         String response = apiClient.createLibro(libroDTO);
 
         if (response != null) {
-            showAlert("Exito", "El libro ha sido añadido correctamente");
+            showAlert("Exito", "El libro ha sido añadido correctamente"); //constante
             Stage stage = (Stage) btnGuardar.getScene().getWindow();
             stage.close();
         } else {
-            showAlert("Error", "No se ha podido añadir el libro");
+            showAlert("Error", "No se ha podido añadir el libro"); //constante
         }
     }
 
