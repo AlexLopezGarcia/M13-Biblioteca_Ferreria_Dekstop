@@ -11,8 +11,9 @@
             <Button text="Modificar Libro" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
             <Button text="Añadir Libro" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
             <Pane HBox.hgrow="ALWAYS"/>
-            <Button text="Logarse"
-                    style="-fx-background-color: #444; -fx-text-fill: white;"/>
+            <Button text="Iniciar Sesion"
+                    style="-fx-background-color: #444; -fx-text-fill: white;"
+                    onAction="#abrirPanelSesion"/>
             <Button text="Registrar Usuario"
                     style="-fx-background-color: #444; -fx-text-fill: white;"
                     onAction="#abrirRegistroUsuario"/>

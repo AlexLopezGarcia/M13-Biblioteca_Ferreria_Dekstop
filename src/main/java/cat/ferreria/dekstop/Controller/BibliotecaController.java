@@ -97,6 +97,20 @@ public class BibliotecaController {
             e.printStackTrace();
         }
     }
+    @FXML
+    private void abrirPanelSesion() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/sesion.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Iniciar Sesion");
+            stage.setScene(new Scene(root, 600, 400));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void buscarLibros() {
 

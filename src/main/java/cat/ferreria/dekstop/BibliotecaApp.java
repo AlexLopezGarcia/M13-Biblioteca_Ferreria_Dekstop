@@ -15,6 +15,7 @@ public class BibliotecaApp extends Application {
         primaryStage.setTitle("Biblioteca");
         primaryStage.setScene(scene);
         primaryStage.show();
+
     }
 
     public static void main(String[] args) {

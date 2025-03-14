@@ -6,10 +6,11 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class RegistrarUsuarioController {
@@ -21,7 +22,7 @@ public class RegistrarUsuarioController {
     @FXML private PasswordField contrasenaField;
     @FXML private Button registrarButton;
 
-    @FXML private TableView<cat.ferreria.dekstop.bussines.Model.Usuario> tablaUsuarios;
+    @FXML private TableView<Usuario> tablaUsuarios;
     @FXML private TableColumn<Usuario, String> colDni;
     @FXML private TableColumn<Usuario, String> colNombre;
     @FXML private TableColumn<Usuario, String> colCorreo;
@@ -56,31 +57,66 @@ public class RegistrarUsuarioController {
         if (!Pattern.matches(regexCorreo, correo)) {
             errores.append("- Correo electrónico inválido.\n");
         }
-        if (contrasena.length() < 6) {
-            errores.append("- La contraseña debe tener al menos 6 caracteres.\n");
+        if (contrasena.length() < 8) {
+            errores.append("- La contraseña debe tener al menos 8 caracteres.\n");
         }
 
         if (errores.length() > 0) {
-            // Mostrar un Alert en lugar de JOptionPane
-            Alert alerta = new Alert(AlertType.ERROR);
-            alerta.setTitle("Error en el registro");
-            alerta.setHeaderText("Se han encontrado errores");
-            alerta.setContentText(errores.toString());
-            alerta.showAndWait(); // Mantiene el foco en la ventana actual
-        } else {
-            Usuario nuevoUsuario = new Usuario(dni, nombre, contrasena, correo);
-
-            Alert exito = new Alert(AlertType.INFORMATION);
-            exito.setTitle("Registro exitoso");
-            exito.setHeaderText("Usuario registrado correctamente");
-            exito.setContentText("DNI: " + nuevoUsuario.getDni() + "\n" +
-                    "Nombre: " + nuevoUsuario.getNombre() + "\n" +
-                    "Correo: " + nuevoUsuario.getCorreoElectronico());
-            exito.showAndWait();
-
-            limpiarCampos();
+            mostrarAlerta(Alert.AlertType.ERROR, "Error en el registro", "Se han encontrado errores", errores.toString());
+            return;
         }
+
+        // Verificar si el usuario ya existe en la base de datos
+        if (usuarioExiste(dni, correo)) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Registro fallido", "El usuario ya existe", "El DNI o correo electrónico ya están registrados.");
+            return;
+        }
+
+        // Aquí iría la llamada a la API para registrar el usuario (POST)
+        Usuario nuevoUsuario = new Usuario(dni, nombre, contrasena, correo);
+        usuarios.add(nuevoUsuario);
+
+        mostrarAlerta(Alert.AlertType.INFORMATION, "Registro exitoso", "Usuario registrado correctamente",
+                "DNI: " + nuevoUsuario.getDni() + "\n" +
+                        "Nombre: " + nuevoUsuario.getNombre() + "\n" +
+                        "Correo: " + nuevoUsuario.getCorreoElectronico());
+
+        limpiarCampos();
     }
+
+    private boolean usuarioExiste(String dni, String correo) {
+        try {
+            String urlString = "http://tu-api.com/usuarios?dni=" + dni + "&correo=" + correo;
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.connect();
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == 200) { // Si el usuario ya existe, la API debería responder con un 200
+                Scanner scanner = new Scanner(url.openStream());
+                StringBuilder jsonString = new StringBuilder();
+                while (scanner.hasNext()) {
+                    jsonString.append(scanner.nextLine());
+                }
+                scanner.close();
+
+                return !jsonString.toString().isEmpty(); // Si la respuesta no está vacía, el usuario existe
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String cabecera, String contenido) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(cabecera);
+        alerta.setContentText(contenido);
+        alerta.showAndWait();
+    }
+
     private void limpiarCampos() {
         dniField.setText("");
         nombreField.setText("");
@@ -88,6 +124,7 @@ public class RegistrarUsuarioController {
         contrasenaField.setText("");
     }
 }
+
 
 
 
