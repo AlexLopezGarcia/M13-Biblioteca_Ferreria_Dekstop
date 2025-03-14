@@ -83,7 +83,7 @@ public class CrearLibroController {
                 return;
             }
         } catch (NumberFormatException e) {
-            showAlert("Error", "La cantidad debe ser un número entero"); //constante
+            showAlert("Error", "La cantidad debe ser un numero entero"); //constante
             return;
         }
 
