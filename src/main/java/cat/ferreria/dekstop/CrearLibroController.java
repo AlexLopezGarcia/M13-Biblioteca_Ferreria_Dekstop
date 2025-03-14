@@ -32,7 +32,24 @@ public class CrearLibroController {
     public void initialize() {
         cmbEstadoUso.getItems().addAll("Nuevo", "Usado", "Deteriorado");
         btnGuardar.setOnAction(event -> guardarLibro());
+
+        txtCantidad.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                txtCantidad.setText(oldValue);
+            } else {
+                try {
+                    int value = Integer.parseInt(newValue);
+                    if (value < 0 || value > 99) {
+                        txtCantidad.setText(oldValue);
+                    }
+                } catch (NumberFormatException e) {
+                    txtCantidad.setText(oldValue);
+                }
+            }
+        });
     }
+
+
 
     private void guardarLibro() {
         String isbn = this.txtISBN.getText();
