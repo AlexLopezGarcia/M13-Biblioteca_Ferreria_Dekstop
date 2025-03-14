@@ -70,6 +70,23 @@ public class CrearLibroController {
         String categoria = txtCategoria.getText();
         String estado = cmbEstadoUso.getSelectionModel().getSelectedItem();
 
+        if (txtCantidad.getText().isEmpty()) {
+            showAlert("Error", "Debes ingresar una cantidad valida"); //constante
+            return;
+        }
+
+        int cantidad;
+        try {
+            cantidad = Integer.parseInt(txtCantidad.getText());
+            if (cantidad < 0 || cantidad > 99) {
+                showAlert("Error", "La cantidad debe estar entre 0 y 99"); //constante
+                return;
+            }
+        } catch (NumberFormatException e) {
+            showAlert("Error", "La cantidad debe ser un número entero"); //constante
+            return;
+        }
+
         if (titulo.isEmpty() || autor.isEmpty() || categoria.isEmpty() || estado == null) {
             showAlert("Error", "Completa todos los campos"); //constante
             return;
