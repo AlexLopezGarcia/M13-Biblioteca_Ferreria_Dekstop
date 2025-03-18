@@ -44,7 +44,6 @@ public class ApiClient {
             if (responseCode != HttpURLConnection.HTTP_CREATED && responseCode != HttpURLConnection.HTTP_OK) {
                 return "Error: " + responseCode + " - " + readResponse(conn.getErrorStream());
             }
-
             return readResponse(conn.getInputStream());
 
         } catch (Exception e) {
