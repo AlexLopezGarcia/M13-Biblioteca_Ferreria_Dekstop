@@ -3,24 +3,29 @@ package cat.ferreria.dekstop;
 import cat.ferreria.dekstop.bussines.Model.LibroDTO;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.*;
 
 public class ApiClient {
+
+    private final ExecutorService executor = Executors.newCachedThreadPool(); // Manejo eficiente de hilos
+
     // Obtener la lista de historial
     public String fetchHistorial() {
-        String apiUrl = "http://localhost:9090/libros";
-        return fetchData(apiUrl);
+        return fetchData("http://localhost:9090/libros");
     }
 
     // Obtener los detalles de un libro por ISBN
     public String fetchLibroByIsbn(String isbn) {
-        String apiUrl = "http://localhost:9090/libros/" + isbn;
-        return fetchData(apiUrl);
+        return fetchData("http://localhost:9090/libros/" + isbn);
     }
 
+    // Método POST para crear un libro
     public String createLibro(LibroDTO libroDTO) {
         String apiUrl = "http://localhost:9090/libros";
         try {
@@ -30,65 +35,68 @@ public class ApiClient {
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
 
-            Gson gson = new Gson();
-            String jsonInput = gson.toJson(libroDTO);
-
-
+            String jsonInput = new Gson().toJson(libroDTO);
             try (OutputStream os = conn.getOutputStream()) {
-                os.write(jsonInput.getBytes("UTF-8"));
+                os.write(jsonInput.getBytes(StandardCharsets.UTF_8));
             }
 
             int responseCode = conn.getResponseCode();
-
             if (responseCode != HttpURLConnection.HTTP_CREATED && responseCode != HttpURLConnection.HTTP_OK) {
-                BufferedReader errorReader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-                String errorLine;
-                StringBuilder errorResponse = new StringBuilder();
-                while ((errorLine = errorReader.readLine()) != null) {
-                    errorResponse.append(errorLine);
+                return "Error: " + responseCode + " - " + readResponse(conn.getErrorStream());
+            }
+
+            return readResponse(conn.getInputStream());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error al conectar con la API: " + e.getMessage();
+        }
+    }
+
+    // Método mejorado para realizar peticiones GET con FutureTask
+    public String fetchData(String apiUrl) {
+        Future<String> future = executor.submit(() -> {
+            try {
+                URL url = new URL(apiUrl);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
+
+                int responseCode = conn.getResponseCode();
+                if (responseCode != 200) {
+                    return "ERROR: " + responseCode + " - " + readResponse(conn.getErrorStream());
                 }
+
+                return readResponse(conn.getInputStream());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "ERROR: " + e.getMessage();
+            }
+        });
+
+        try {
+            String response = future.get();
+            if (response.startsWith("ERROR: ")) {
+                System.err.println("API ERROR: " + response);
                 return null;
             }
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String output;
-            StringBuilder response = new StringBuilder();
-            while ((output = br.readLine()) != null) {
-                response.append(output);
-            }
-            conn.disconnect();
-
-            return response.toString();
-        } catch (Exception e) {
-            System.out.println(e.getLocalizedMessage());
+            return response;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
             return null;
         }
     }
 
 
-    private String fetchData(String apiUrl) {
-        try {
-
-            URL url = new URL(apiUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Accept", "application/json");
-
-            if (conn.getResponseCode() != 200) {
-                throw new RuntimeException("Error HTTP: " + conn.getResponseCode());
-            }
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String output;
-            StringBuilder response = new StringBuilder();
-            while ((output = br.readLine()) != null) {
-                response.append(output);
-            }
-            conn.disconnect();
-            return response.toString();
-        } catch (Exception e) {
-            System.out.println(e.getLocalizedMessage());
-            return null;
+    // Método para leer la respuesta del InputStream
+    private String readResponse(InputStream inputStream) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        StringBuilder response = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) {
+            response.append(line);
         }
+        return response.toString();
     }
 }
