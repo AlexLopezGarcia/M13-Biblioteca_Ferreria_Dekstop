@@ -32,18 +32,35 @@ public class CrearLibroController {
     public void initialize() {
         cmbEstadoUso.getItems().addAll("Nuevo", "Usado", "Deteriorado");
         btnGuardar.setOnAction(event -> guardarLibro());
+
+        txtCantidad.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                txtCantidad.setText(oldValue);
+            } else {
+                try {
+                    int value = Integer.parseInt(newValue);
+                    if (value < 0 || value > 99) {
+                        txtCantidad.setText(oldValue);
+                    }
+                } catch (NumberFormatException e) {
+                    txtCantidad.setText(oldValue);
+                }
+            }
+        });
     }
+
+
 
     private void guardarLibro() {
         String isbn = this.txtISBN.getText();
         if (isbn.isEmpty()) {
-            showAlert("Error", "Debes ingresar un ISBN");
+            showAlert("Error", "Debes ingresar un ISBN"); //constante
             return;
         }
 
         String existLibro = apiClient.fetchLibroByIsbn(isbn);
         if (existLibro != null) {
-            showAlert("Error", "El libro con ISBN " + isbn + " ya existe en la base de datos");
+            showAlert("Error", "El libro con ISBN " + isbn + " ya existe en la base de datos"); //constante
             return;
         }
 
@@ -53,8 +70,25 @@ public class CrearLibroController {
         String categoria = txtCategoria.getText();
         String estado = cmbEstadoUso.getSelectionModel().getSelectedItem();
 
+        if (txtCantidad.getText().isEmpty()) {
+            showAlert("Error", "Debes ingresar una cantidad valida"); //constante
+            return;
+        }
+
+        int cantidad;
+        try {
+            cantidad = Integer.parseInt(txtCantidad.getText());
+            if (cantidad < 0 || cantidad > 99) {
+                showAlert("Error", "La cantidad debe estar entre 0 y 99"); //constante
+                return;
+            }
+        } catch (NumberFormatException e) {
+            showAlert("Error", "La cantidad debe ser un numero entero"); //constante
+            return;
+        }
+
         if (titulo.isEmpty() || autor.isEmpty() || categoria.isEmpty() || estado == null) {
-            showAlert("Error", "Completa todos los campos");
+            showAlert("Error", "Completa todos los campos"); //constante
             return;
         }
 
@@ -62,11 +96,11 @@ public class CrearLibroController {
         String response = apiClient.createLibro(libroDTO);
 
         if (response != null) {
-            showAlert("Exito", "El libro ha sido añadido correctamente");
+            showAlert("Exito", "El libro ha sido añadido correctamente"); //constante
             Stage stage = (Stage) btnGuardar.getScene().getWindow();
             stage.close();
         } else {
-            showAlert("Error", "No se ha podido añadir el libro");
+            showAlert("Error", "No se ha podido añadir el libro"); //constante
         }
     }
 
