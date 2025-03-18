@@ -88,7 +88,6 @@ public class ApiClient {
         }
     }
 
-
     // Método para leer la respuesta del InputStream
     private String readResponse(InputStream inputStream) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
