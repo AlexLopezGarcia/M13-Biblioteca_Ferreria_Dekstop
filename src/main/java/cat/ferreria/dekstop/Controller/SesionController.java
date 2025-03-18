@@ -29,21 +29,16 @@ public class SesionController {
     @FXML
     private Label lblOlvidado;
 
-    // Lista simulada de usuarios (normalmente vendría de una base de datos)
     private final List<Usuario> usuarios = new ArrayList<>();
 
     @FXML
     public void initialize() {
-        // Ocultamos los labels al inicio
         lblError.setVisible(false);
 
-        // Simulamos un usuario registrado (esto normalmente vendría de una BD)
         usuarios.add(new Usuario("12345678X", "Juan Pérez", "1234", "juan@example.com"));
 
-        // Configuramos el evento para el botón de iniciar sesión
         btnIniciarSesion.setOnAction(event -> iniciarSesion());
 
-        // Configuramos el evento para el label de "He olvidado mi contraseña"
         lblOlvidado.setOnMouseClicked(this::recuperarContrasena);
     }
 
@@ -58,18 +53,17 @@ public class SesionController {
             lblError.setText("Inicio de sesión exitoso");
             lblError.setTextFill(Color.GREEN);
             lblError.setVisible(true);
-            lblOlvidado.setVisible(false); // Ocultamos el label de "He olvidado mi contraseña"
+            lblOlvidado.setVisible(false);
         } else {
             lblError.setText("Correo o contraseña incorrectos");
             lblError.setTextFill(Color.RED);
             lblError.setVisible(true);
-            lblOlvidado.setVisible(true); // Mostramos el label de "He olvidado mi contraseña"
+            lblOlvidado.setVisible(true);
         }
     }
 
     private void recuperarContrasena(MouseEvent event) {
         System.out.println("He olvidado mi contraseña clickeado");
-        // Aquí podrías abrir otra ventana o mostrar un mensaje
     }
 }
 
