@@ -1,5 +1,6 @@
 package cat.ferreria.dekstop;
 
+import cat.ferreria.dekstop.Controller.ModificarLibroController;
 import cat.ferreria.dekstop.bussines.Model.Libro;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,11 +9,12 @@ import javafx.stage.Stage;
 import java.util.function.Consumer;
 
 public class PantallaModificarLibro {
+    private Libro libro;
+    private Consumer<Libro> onLibroModificadoCallback;
 
-    private Consumer<Libro> onLibroCreadoCallback;
-
-    public PantallaModificarLibro(Consumer<Libro> onLibroCreadoCallback) {
-        this.onLibroCreadoCallback = onLibroCreadoCallback;
+    public PantallaModificarLibro(Libro libro, Consumer<Libro> onLibroModificadoCallback) {
+        this.libro = libro;
+        this.onLibroModificadoCallback = onLibroModificadoCallback;
     }
 
     public void show() {
@@ -20,9 +22,11 @@ public class PantallaModificarLibro {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ModificarLibro.fxml"));
             Parent root = loader.load();
 
-            CrearLibroController controller = loader.getController();
-            if (onLibroCreadoCallback != null) {
-                controller.setOnLibroCreado(onLibroCreadoCallback);
+            ModificarLibroController controller = loader.getController();
+            controller.setLibro(libro);
+
+            if (onLibroModificadoCallback != null) {
+                controller.setOnLibroModificado(onLibroModificadoCallback);
             }
 
             Stage stage = new Stage();
@@ -34,5 +38,4 @@ public class PantallaModificarLibro {
             System.err.println("Error al cargar el archivo FXML");
         }
     }
-
 }

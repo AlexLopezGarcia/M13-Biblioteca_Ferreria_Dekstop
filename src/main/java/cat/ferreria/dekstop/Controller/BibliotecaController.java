@@ -50,6 +50,7 @@ public class BibliotecaController {
         cargarLibrosDesdeApi();
 
         btnAnyadir.setOnAction(event -> openPantallaCrearLibro());
+        btnModificar.setOnAction(event -> openPantallaModificarLibro());
         buscarButton.setOnAction(event -> buscarLibros());
     }
 
@@ -95,6 +96,41 @@ public class BibliotecaController {
             e.printStackTrace();
             System.err.println("Error al abrir la pantalla de crear libro");
         }
+    }
+
+    public void openPantallaModificarLibro() {
+        Libro libroSeleccionado = tablaLibros.getSelectionModel().getSelectedItem();
+
+        if (libroSeleccionado == null) {
+            showAlert("Error", "Debes seleccionar un libro de la tabla");
+            return;
+        }
+
+        PantallaModificarLibro pantallaModificarLibro = new PantallaModificarLibro(libroSeleccionado, libroModificado -> {
+            int index = libros.indexOf(libroSeleccionado);
+            if (index != -1) {
+                libros.set(index, libroModificado);
+                tablaLibros.refresh();
+            } else {
+                showAlert("Error", "El libro seleccionado ya no está disponible en la lista");
+            }
+        });
+
+        try {
+            pantallaModificarLibro.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Error", "No se pudo abrir la pantalla de modificar libro");
+        }
+    }
+
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
 }
