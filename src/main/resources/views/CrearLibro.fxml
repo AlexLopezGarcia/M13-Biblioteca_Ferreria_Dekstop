@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane alignment="center" hgap="20" prefHeight="448.0" prefWidth="465.0" style="-fx-padding: 20px; -fx-font-size: 16px;" vgap="20" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.CrearLibroController">
+<GridPane alignment="center" hgap="20" prefHeight="448.0" prefWidth="465.0" style="-fx-padding: 20px; -fx-font-size: 16px;" vgap="20" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.Controller.CrearLibroController">
 
     <Label text="ISBN: " GridPane.columnIndex="0" GridPane.rowIndex="0"/>
     <TextField fx:id="txtISBN" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="0" />
