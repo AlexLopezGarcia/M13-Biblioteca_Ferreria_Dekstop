@@ -26,13 +26,11 @@ public class PantallaModificarLibro {
             }
 
             Stage stage = new Stage();
-            stage.setTitle("Modificar Libro");
+            stage.setTitle("Modificar Libro"); //constante
             stage.setScene(new Scene(root));
             stage.show();
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Error al cargar el archivo FXML");
+            System.out.println(e.getLocalizedMessage());
         }
     }
-
 }
