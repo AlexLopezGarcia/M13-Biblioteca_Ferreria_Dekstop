@@ -1,4 +1,4 @@
-package cat.ferreria.dekstop.bussines.Model;
+package cat.ferreria.dekstop.model.dtos;
 
 public class LibroDTO {
     private String isbn;

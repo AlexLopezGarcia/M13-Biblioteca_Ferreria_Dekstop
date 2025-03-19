@@ -1,9 +1,10 @@
-package cat.ferreria.dekstop.Controller;
+package cat.ferreria.dekstop.controller;
 
-import cat.ferreria.dekstop.*;
-import cat.ferreria.dekstop.bussines.Model.HistorialDTO;
-import cat.ferreria.dekstop.bussines.Model.Libro;
-import cat.ferreria.dekstop.bussines.Model.LibroDTO;
+import cat.ferreria.dekstop.dataaccess.ApiClient;
+import cat.ferreria.dekstop.model.dtos.HistorialDTO;
+import cat.ferreria.dekstop.model.clazz.Libro;
+import cat.ferreria.dekstop.model.dtos.LibroDTO;
+import cat.ferreria.dekstop.vistas.PantallaCrearLibro;
 import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

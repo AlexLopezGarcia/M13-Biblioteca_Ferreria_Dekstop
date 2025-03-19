@@ -56,7 +56,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>cat.ferreria.dekstop.BibliotecaApp</mainClass>
+                    <mainClass>cat.ferreria.dekstop.initializr.BibliotecaApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>

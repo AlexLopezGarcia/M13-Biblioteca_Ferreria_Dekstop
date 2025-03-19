@@ -1,7 +1,7 @@
-package cat.ferreria.dekstop;
+package cat.ferreria.dekstop.vistas;
 
-import cat.ferreria.dekstop.Controller.CrearLibroController;
-import cat.ferreria.dekstop.bussines.Model.Libro;
+import cat.ferreria.dekstop.controller.CrearLibroController;
+import cat.ferreria.dekstop.model.clazz.Libro;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;

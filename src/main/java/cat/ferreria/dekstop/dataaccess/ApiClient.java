@@ -1,6 +1,6 @@
-package cat.ferreria.dekstop;
+package cat.ferreria.dekstop.dataaccess;
 
-import cat.ferreria.dekstop.bussines.Model.LibroDTO;
+import cat.ferreria.dekstop.model.dtos.LibroDTO;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.InputStream;
