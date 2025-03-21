@@ -16,9 +16,9 @@
                 <Font size="24.0" />
             </font>
         </Label>
-        <TextField fx:id="txtCorreo" layoutX="231.0" layoutY="145.0" prefHeight="25.0" prefWidth="205.0" />
+        <TextField fx:id="correoTextField" layoutX="231.0" layoutY="145.0" prefHeight="25.0" prefWidth="205.0" />
         <Label layoutX="161.0" layoutY="200.0" prefHeight="17.0" prefWidth="87.0" text="Contraseña:" />
-        <PasswordField fx:id="txtContrasena" layoutX="231.0" layoutY="196.0" prefHeight="25.0" prefWidth="205.0" />
+        <PasswordField fx:id="contrasenaTextField" layoutX="231.0" layoutY="196.0" prefHeight="25.0" prefWidth="205.0" />
         <Button fx:id="btnIniciarSesion" layoutX="145.0" layoutY="245.0" mnemonicParsing="false" prefHeight="25.0"
                 prefWidth="311.0" text="Iniciar Sesión" textFill="white">
             <style>
@@ -29,9 +29,9 @@
                 -fx-background-radius: 5px;
             </style>
         </Button>
-        <Label fx:id="lblOlvidado" layoutX="145.0" layoutY="295.0" prefHeight="17.0" prefWidth="190.0"
+        <Label fx:id="olvidadoLabel" layoutX="145.0" layoutY="295.0" prefHeight="17.0" prefWidth="190.0"
                text="He olvidado mi contraseña" underline="true"/>
-        <Label fx:id="lblError" layoutX="212.0" layoutY="98.0" prefHeight="17.0" prefWidth="178.0"
+        <Label fx:id="errorLabel" layoutX="212.0" layoutY="98.0" prefHeight="17.0" prefWidth="178.0"
                text="Correo o contraseña incorrectos" textFill="red" visible="false" />
     </children>
 </Pane>

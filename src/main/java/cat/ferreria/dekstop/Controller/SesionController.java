@@ -7,44 +7,44 @@ import javafx.scene.control.*;
 public class SesionController {
 
     @FXML
-    private TextField txtCorreo;
+    private TextField correoTextField;
 
     @FXML
-    private PasswordField txtContrasena;
+    private PasswordField contrasenaTextField;
 
     @FXML
     private Button btnIniciarSesion;
 
     @FXML
-    private Label lblError;
+    private Label errorLabel;
 
     @FXML
-    private Label lblOlvidado;
+    private Label olvidadoLabel;
 
     private ApiClient apiClient = new ApiClient();
 
     @FXML
     public void initialize() {
-        lblError.setVisible(false);
+        errorLabel.setVisible(false);
 
         btnIniciarSesion.setOnAction(event -> iniciarSesion());
 
-        lblOlvidado.setOnMouseClicked(event -> recuperarContrasena());
+        olvidadoLabel.setOnMouseClicked(event -> recuperarContrasena());
     }
 
     private void iniciarSesion() {
-        String correo = txtCorreo.getText().trim();
-        String contrasena = txtContrasena.getText().trim();
+        String correo = correoTextField.getText().trim();
+        String contrasena = contrasenaTextField.getText().trim();
 
         boolean credencialesValidas = apiClient.validarCredencialesEnAPI(correo, contrasena);
 
         if (credencialesValidas) {
             mostrarMensajeExito("Inicio de sesión exitoso.");
-            lblError.setVisible(false);
+            errorLabel.setVisible(false);
         } else {
-            lblError.setText("Correo o contraseña incorrectos");
-            lblError.setStyle("-fx-text-fill: red;");
-            lblError.setVisible(true);
+            errorLabel.setText("Correo o contraseña incorrectos");
+            errorLabel.setStyle("-fx-text-fill: red;");
+            errorLabel.setVisible(true);
         }
     }
 
@@ -57,7 +57,7 @@ public class SesionController {
     }
 
     private void recuperarContrasena() {
-        System.out.println("He olvidado mi contraseña clickeado");
+
     }
 }
 

@@ -90,32 +90,25 @@ public class ApiClient {
         }
     }
     public boolean validarCredencialesEnAPI(String correo, String contrasena) {
-        String apiUrl = "http://localhost:9090/usuarios/sesion"; // Verifica que sea la URL correcta
+        String apiUrl = "http://localhost:9090/usuarios/sesion";
 
         try {
-            // Construimos los parámetros en formato clave=valor
             String urlParameters = "correoElectronico=" + correo + "&contrasenya=" + contrasena;
 
-            // Convertimos los parámetros en bytes
             byte[] postData = urlParameters.getBytes("utf-8");
 
-            // Creamos la conexión
             URL url = new URL(apiUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded"); // ✅ Especificamos el formato correcto
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             conn.setDoOutput(true);
 
-            // Enviamos los datos al servidor
             try (OutputStream os = conn.getOutputStream()) {
                 os.write(postData, 0, postData.length);
             }
 
-            // Obtenemos el código de respuesta
             int responseCode = conn.getResponseCode();
-            System.out.println("Código de respuesta de la API: " + responseCode);
 
-            // Leemos la respuesta de la API
             BufferedReader br = new BufferedReader(new InputStreamReader(
                     (responseCode >= 200 && responseCode < 300) ? conn.getInputStream() : conn.getErrorStream()
             ));
@@ -124,9 +117,6 @@ public class ApiClient {
             while ((output = br.readLine()) != null) {
                 response.append(output);
             }
-            System.out.println("Respuesta de la API: " + response.toString());
-
-            // Si la respuesta es 200, el usuario es válido
             return responseCode == 200;
 
         } catch (Exception e) {
