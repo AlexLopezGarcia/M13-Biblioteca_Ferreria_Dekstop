@@ -4,29 +4,19 @@ import cat.ferreria.dekstop.ApiClient;
 import cat.ferreria.dekstop.bussines.Model.Usuario;
 import cat.ferreria.dekstop.bussines.Model.UsuarioDTO;
 import com.google.gson.Gson;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 public class RegistrarUsuarioController {
 
-    @FXML private Label labelDni, labelNombre, labelCorreo, labelContrasena, labelTitulo;
     @FXML private TextField dniField;
     @FXML private TextField nombreField;
     @FXML private TextField correoField;
     @FXML private PasswordField contrasenaField;
     @FXML private Button registrarButton;
 
-    @FXML private TableView<Usuario> tablaUsuarios;
-    @FXML private TableColumn<Usuario, String> colDni;
-    @FXML private TableColumn<Usuario, String> colNombre;
-    @FXML private TableColumn<Usuario, String> colCorreo;
-
-    private ObservableList<Usuario> usuarios = FXCollections.observableArrayList();
     private ApiClient apiClient = new ApiClient();
 
     @FXML
@@ -70,7 +60,6 @@ public class RegistrarUsuarioController {
             return;
         }
 
-        // 🔧 Asegurar que los datos se pasan en el orden correcto
         Usuario nuevoUsuario = new Usuario(dni, nombre, contrasena, correo);
         boolean registrado = apiClient.registrarUsuarioEnAPI(nuevoUsuario);
 
