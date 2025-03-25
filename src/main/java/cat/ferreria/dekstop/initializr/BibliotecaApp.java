@@ -15,6 +15,9 @@ public class BibliotecaApp extends Application {
         primaryStage.setTitle("Biblioteca");
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
+        primaryStage.setOnCloseRequest(event -> {
+            System.exit(0);
+        });
         primaryStage.show();
     }
 
