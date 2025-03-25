@@ -24,7 +24,7 @@
         <Button fx:id="registrarButton" layoutX="108.0" layoutY="331.0" mnemonicParsing="false" prefHeight="25.0"
                 prefWidth="384.0" text="Registrar Usuario" textFill="white" onAction="#registrarUsuario">
             <style>
-                -fx-background-color: #2e7d32; /* Color verde */
+                -fx-background-color: #2e7d32;
                 -fx-font-weight: bold;
                 -fx-font-size: 14px;
                 -fx-border-radius: 5px;

@@ -12,11 +12,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-
-import static java.util.Arrays.stream;
 
 public class BibliotecaController {
     @FXML private TextField isbnField;
@@ -25,6 +27,7 @@ public class BibliotecaController {
     @FXML private TextField editorialField;
     @FXML private ComboBox<String> categoriaComboBox;
     @FXML private Button buscarButton;
+    @FXML private ComboBox<String> idiomaComboBox;  // ComboBox para los idiomas
 
     @FXML private TableView<Libro> tablaLibros;
     @FXML private TableColumn<Libro, String> colISBN;
@@ -39,29 +42,35 @@ public class BibliotecaController {
 
     @FXML
     public void initialize() {
-        categoriaComboBox.setItems(FXCollections.observableArrayList(
-                "Narrativa", "Novela juvenil", "Bibliografía"
-        ));
+        try {
+            categoriaComboBox.setItems(FXCollections.observableArrayList(
+                    "Narrativa", "Novela juvenil", "Bibliografía"
+            ));
 
-        colISBN.setCellValueFactory(data -> data.getValue().isbnProperty());
-        colTitulo.setCellValueFactory(data -> data.getValue().tituloProperty());
-        colAutor.setCellValueFactory(data -> data.getValue().autorProperty());
-        colCategoria.setCellValueFactory(data -> data.getValue().categoriaProperty());
-        colEstado.setCellValueFactory(data -> data.getValue().estadoProperty());
+            colISBN.setCellValueFactory(data -> data.getValue().isbnProperty());
+            colTitulo.setCellValueFactory(data -> data.getValue().tituloProperty());
+            colAutor.setCellValueFactory(data -> data.getValue().autorProperty());
+            colCategoria.setCellValueFactory(data -> data.getValue().categoriaProperty());
+            colEstado.setCellValueFactory(data -> data.getValue().estadoProperty());
 
-        tablaLibros.setItems(libros);
+            tablaLibros.setItems(libros);
 
-        cargarLibrosDesdeApi();
+            cargarLibrosDesdeApi();
+            configurarComboBoxIdiomas();
 
-        buscarButton.setOnAction(event -> buscarLibros());
+            buscarButton.setOnAction(event -> buscarLibros());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error en initialize(): " + e.getMessage());
+        }
     }
+
 
     private void cargarLibrosDesdeApi() {
         String jsonHistorial = apiClient.fetchHistorial();
         if (jsonHistorial != null) {
             Gson gson = new Gson();
-
-
             HistorialDTO[] historialArray = gson.fromJson(jsonHistorial, HistorialDTO[].class);
             libros.clear();
 
@@ -83,6 +92,72 @@ public class BibliotecaController {
             System.out.println("Error al obtener el historial de la API");
         }
     }
+
+    private void configurarComboBoxIdiomas() {
+        // Lista de idiomas
+        ObservableList<String> idiomas = FXCollections.observableArrayList("Español", "Catalán", "Inglés");
+        idiomaComboBox.setItems(idiomas);
+
+        // Personalizar celdas con imágenes
+        idiomaComboBox.setCellFactory(param -> new ListCell<>() {
+            private final ImageView imageView = new ImageView();
+            private final Text text = new Text();
+            private final HBox hbox = new HBox(10, imageView, text);
+
+            {
+                imageView.setFitWidth(24);
+                imageView.setFitHeight(16);
+            }
+
+            @Override
+            protected void updateItem(String idioma, boolean empty) {
+                super.updateItem(idioma, empty);
+
+                if (empty || idioma == null) {
+                    setGraphic(null);
+                } else {
+                    imageView.setImage(getIconForLanguage(idioma));
+                    text.setText(idioma);
+                    setGraphic(hbox);
+                }
+            }
+        });
+
+        // Mostrar icono en la celda seleccionada
+        idiomaComboBox.setButtonCell(new ListCell<>() {
+            private final ImageView imageView = new ImageView();
+            private final Text text = new Text();
+            private final HBox hbox = new HBox(10, imageView, text);
+
+            {
+                imageView.setFitWidth(24);
+                imageView.setFitHeight(16);
+            }
+
+            @Override
+            protected void updateItem(String idioma, boolean empty) {
+                super.updateItem(idioma, empty);
+
+                if (empty || idioma == null) {
+                    setGraphic(null);
+                } else {
+                    imageView.setImage(getIconForLanguage(idioma));
+                    text.setText(idioma);
+                    setGraphic(hbox);
+                }
+            }
+        });
+    }
+
+    private Image getIconForLanguage(String idioma) {
+        return switch (idioma) {
+            case "Español" -> new Image(getClass().getResourceAsStream("/img/espana.png"));
+            case "Catalán" -> new Image(getClass().getResourceAsStream("/img/catalunya.png"));
+            case "Inglés" -> new Image(getClass().getResourceAsStream("/img/reinoUnido.png"));
+            default -> null;
+        };
+    }
+
     @FXML
     private void abrirRegistroUsuario() {
         try {
@@ -97,6 +172,7 @@ public class BibliotecaController {
             e.printStackTrace();
         }
     }
+
     @FXML
     private void abrirPanelSesion() {
         try {
@@ -104,7 +180,7 @@ public class BibliotecaController {
             Parent root = loader.load();
 
             Stage stage = new Stage();
-            stage.setTitle("Iniciar Sesion");
+            stage.setTitle("Iniciar Sesión");
             stage.setScene(new Scene(root, 600, 400));
             stage.show();
         } catch (IOException e) {
@@ -113,8 +189,6 @@ public class BibliotecaController {
     }
 
     private void buscarLibros() {
-
         System.out.println("Buscando libros con ISBN: " + isbnField.getText());
     }
-
 }
