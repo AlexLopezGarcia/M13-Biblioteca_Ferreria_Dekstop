@@ -23,6 +23,8 @@ public class BibliotecaController {
     @FXML private Button btnAnyadir;
     @FXML private Button btnModificar;
     @FXML private Button btnEliminar;
+    @FXML private Button btnRecargar;
+
 
     @FXML private TableView<Libro> tablaLibros;
     @FXML private TableColumn<Libro, String> colISBN;
@@ -54,6 +56,7 @@ public class BibliotecaController {
         btnAnyadir.setOnAction(event -> openPantallaCrearLibro());
         buscarButton.setOnAction(event -> buscarLibros());
         btnEliminar.setOnAction(event -> eliminarLibro());
+        btnRecargar.setOnAction(event -> recargarLibros());
     }
 
     private void cargarLibrosDesdeApi() {
@@ -85,6 +88,10 @@ public class BibliotecaController {
 
     private void buscarLibros() {
         System.out.println("Buscando libros con ISBN: " + isbnField.getText());
+    }
+
+    private void recargarLibros() {
+        cargarLibrosDesdeApi();
     }
 
     private void openPantallaCrearLibro() {

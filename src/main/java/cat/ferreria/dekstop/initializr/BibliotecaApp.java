@@ -14,6 +14,10 @@ public class BibliotecaApp extends Application {
         scene.getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
         primaryStage.setTitle("Biblioteca");
         primaryStage.setScene(scene);
+        primaryStage.setMaximized(true);
+        primaryStage.setOnCloseRequest(event -> {
+            System.exit(0);
+        });
         primaryStage.show();
     }
 
