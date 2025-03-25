@@ -1,4 +1,4 @@
-package cat.ferreria.dekstop.bussines.Model;
+package cat.ferreria.dekstop.model.clazz;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

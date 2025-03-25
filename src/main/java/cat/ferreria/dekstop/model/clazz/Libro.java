@@ -1,4 +1,4 @@
-package cat.ferreria.dekstop.bussines.Model;
+package cat.ferreria.dekstop.model.clazz;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -16,6 +16,26 @@ public class Libro {
         this.autor = new SimpleStringProperty(autor);
         this.categoria = new SimpleStringProperty(categoria);
         this.estado = new SimpleStringProperty(estado);
+    }
+
+    public String getIsbn() {
+        return isbn.get();
+    }
+
+    public String getTitulo() {
+        return titulo.get();
+    }
+
+    public String getAutor() {
+        return autor.get();
+    }
+
+    public String getCategoria() {
+        return categoria.get();
+    }
+
+    public String getEstado() {
+        return estado.get();
     }
 
     public StringProperty isbnProperty() { return isbn; }

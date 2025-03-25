@@ -1,9 +1,10 @@
-package cat.ferreria.dekstop.Controller;
+package cat.ferreria.dekstop.controller;
 
-import cat.ferreria.dekstop.*;
-import cat.ferreria.dekstop.bussines.Model.HistorialDTO;
-import cat.ferreria.dekstop.bussines.Model.Libro;
-import cat.ferreria.dekstop.bussines.Model.LibroDTO;
+import cat.ferreria.dekstop.dataaccess.ApiClient;
+import cat.ferreria.dekstop.model.dtos.HistorialDTO;
+import cat.ferreria.dekstop.model.clazz.Libro;
+import cat.ferreria.dekstop.model.dtos.LibroDTO;
+import cat.ferreria.dekstop.vistas.PantallaCrearLibro;
 import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,6 +22,7 @@ public class BibliotecaController {
     @FXML private Button buscarButton;
     @FXML private Button btnAnyadir;
     @FXML private Button btnModificar;
+    @FXML private Button btnEliminar;
 
     @FXML private TableView<Libro> tablaLibros;
     @FXML private TableColumn<Libro, String> colISBN;
@@ -51,13 +53,13 @@ public class BibliotecaController {
 
         btnAnyadir.setOnAction(event -> openPantallaCrearLibro());
         buscarButton.setOnAction(event -> buscarLibros());
+        btnEliminar.setOnAction(event -> eliminarLibro());
     }
 
     private void cargarLibrosDesdeApi() {
         String jsonHistorial = apiClient.fetchHistorial();
         if (jsonHistorial != null) {
             Gson gson = new Gson();
-
 
             HistorialDTO[] historialArray = gson.fromJson(jsonHistorial, HistorialDTO[].class);
             libros.clear();
@@ -93,8 +95,29 @@ public class BibliotecaController {
             pantallaCrearLibro.show();
         } catch(Exception e) {
             e.printStackTrace();
-            System.err.println("Error al abrir la pantalla de crear libro");
+            System.out.println("Error al abrir la pantalla de crear libro");
         }
     }
 
+    private void eliminarLibro() {
+        Libro libroSeleccionado = tablaLibros.getSelectionModel().getSelectedItem();
+        if (libroSeleccionado != null) {
+            boolean eliminado = apiClient.eliminarLibroPorIsbn(libroSeleccionado.getIsbn());
+            if (eliminado) {
+                libros.remove(libroSeleccionado);
+                cargarLibrosDesdeApi(); //Actualizar la tabla despues de eliminar un libro
+            }
+        } else {
+            showAlert("Error", "No se ha seleccionado ningún libro para eliminar"); //constante
+        }
+    }
+
+    //metodo para mostrar alertas en pantalla
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }

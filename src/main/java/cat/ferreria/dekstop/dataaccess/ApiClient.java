@@ -1,6 +1,6 @@
-package cat.ferreria.dekstop;
+package cat.ferreria.dekstop.dataaccess;
 
-import cat.ferreria.dekstop.bussines.Model.LibroDTO;
+import cat.ferreria.dekstop.model.dtos.LibroDTO;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -51,6 +51,22 @@ public class ApiClient {
             return "Error al conectar con la API: " + e.getMessage();
         }
     }
+    // Método DELETE para eliminar un libro por ISBN
+    public boolean eliminarLibroPorIsbn(String isbn) {
+        String apiUrl = "http://localhost:9090/libros/" + isbn;
+        try {
+            URL url = new URL(apiUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("DELETE");
+
+            int responseCode = conn.getResponseCode();
+            return responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_NO_CONTENT;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     // Método mejorado para realizar peticiones GET con FutureTask
     public String fetchData(String apiUrl) {
