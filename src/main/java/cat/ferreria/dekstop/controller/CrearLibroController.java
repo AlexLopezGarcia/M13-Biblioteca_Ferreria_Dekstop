@@ -49,8 +49,6 @@ public class CrearLibroController {
         });
     }
 
-
-
     private void guardarLibro() {
         String isbn = this.txtISBN.getText();
         if (isbn.isEmpty()) {

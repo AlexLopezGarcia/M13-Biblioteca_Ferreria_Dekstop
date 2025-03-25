@@ -4,7 +4,7 @@ import cat.ferreria.dekstop.dataaccess.ApiClient;
 import cat.ferreria.dekstop.model.dtos.HistorialDTO;
 import cat.ferreria.dekstop.model.clazz.Libro;
 import cat.ferreria.dekstop.model.dtos.LibroDTO;
-import cat.ferreria.dekstop.vistas.PantallaCrearLibro;
+import cat.ferreria.dekstop.vistas.*;
 import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -54,6 +54,7 @@ public class BibliotecaController {
         cargarLibrosDesdeApi();
 
         btnAnyadir.setOnAction(event -> openPantallaCrearLibro());
+        btnModificar.setOnAction(event -> openPantallaModificarLibro());
         buscarButton.setOnAction(event -> buscarLibros());
         btnEliminar.setOnAction(event -> eliminarLibro());
         btnRecargar.setOnAction(event -> recargarLibros());
@@ -103,6 +104,18 @@ public class BibliotecaController {
         } catch(Exception e) {
             e.printStackTrace();
             System.out.println("Error al abrir la pantalla de crear libro");
+        }
+    }
+
+    private void openPantallaModificarLibro() {
+        PantallaModificarLibro pantallaModificarLibro = new PantallaModificarLibro(libro -> {
+            libros.add(libro);
+        });
+        try {
+            pantallaModificarLibro.show();
+        } catch(Exception e) {
+            e.printStackTrace();
+            System.out.println("Error al abrir la pantalla de modificar libro");
         }
     }
 
