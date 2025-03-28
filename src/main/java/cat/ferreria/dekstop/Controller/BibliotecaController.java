@@ -1,9 +1,9 @@
 package cat.ferreria.dekstop.controller;
 
-import cat.ferreria.dekstop.dataacces.ApiClient;
-import cat.ferreria.dekstop.model.dto.HistorialDTO;
+import cat.ferreria.dekstop.dataaccess.ApiClient;
+import cat.ferreria.dekstop.model.dtos.HistorialDTO;
 import cat.ferreria.dekstop.model.clazz.Libro;
-import cat.ferreria.dekstop.model.dto.LibroDTO;
+import cat.ferreria.dekstop.model.dtos.LibroDTO;
 import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

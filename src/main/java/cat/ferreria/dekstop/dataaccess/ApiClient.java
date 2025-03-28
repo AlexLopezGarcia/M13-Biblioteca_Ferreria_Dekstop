@@ -1,14 +1,17 @@
-package cat.ferreria.dekstop.dataacces;
+package cat.ferreria.dekstop.dataaccess;
 
 import cat.ferreria.dekstop.model.clazz.Usuario;
+import cat.ferreria.dekstop.model.dtos.LibroDTO;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class ApiClient {
 
@@ -124,7 +127,39 @@ public class ApiClient {
             return false;
         }
     }
+    public String createLibro(LibroDTO libroDTO) {
+        String apiUrl = "http://localhost:9090/libros";
+        try {
+            URL url = new URL(apiUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
 
+            String jsonInput = new Gson().toJson(libroDTO);
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(jsonInput.getBytes(StandardCharsets.UTF_8));
+            }
 
+            int responseCode = conn.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_CREATED && responseCode != HttpURLConnection.HTTP_OK) {
+                return "Error: " + responseCode + " - " + readResponse(conn.getErrorStream());
+            }
+            return readResponse(conn.getInputStream());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error al conectar con la API: " + e.getMessage();
+        }
+    }
+    private String readResponse(InputStream inputStream) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        StringBuilder response = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) {
+            response.append(line);
+        }
+        return response.toString();
+    }
 }
 

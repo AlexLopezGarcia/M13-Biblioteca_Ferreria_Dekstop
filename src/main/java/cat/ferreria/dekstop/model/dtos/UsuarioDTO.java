@@ -1,4 +1,4 @@
-package cat.ferreria.dekstop.model.dto;
+package cat.ferreria.dekstop.model.dtos;
 
 public class UsuarioDTO {
     private String dni;

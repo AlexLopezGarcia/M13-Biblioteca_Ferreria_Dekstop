@@ -1,6 +1,6 @@
 package cat.ferreria.dekstop.controller;
 
-import cat.ferreria.dekstop.dataacces.ApiClient;
+import cat.ferreria.dekstop.dataaccess.ApiClient;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
