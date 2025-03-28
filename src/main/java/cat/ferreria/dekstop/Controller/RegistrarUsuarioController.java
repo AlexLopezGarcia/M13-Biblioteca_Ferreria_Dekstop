@@ -1,8 +1,8 @@
-package cat.ferreria.dekstop.Controller;
+package cat.ferreria.dekstop.controller;
 
-import cat.ferreria.dekstop.ApiClient;
-import cat.ferreria.dekstop.bussines.Model.Usuario;
-import cat.ferreria.dekstop.bussines.Model.UsuarioDTO;
+import cat.ferreria.dekstop.dataacces.ApiClient;
+import cat.ferreria.dekstop.model.clazz.Usuario;
+import cat.ferreria.dekstop.model.dto.UsuarioDTO;
 import com.google.gson.Gson;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -108,12 +108,3 @@ public class RegistrarUsuarioController {
         contrasenaField.setText("");
     }
 }
-
-
-
-
-
-
-
-
-

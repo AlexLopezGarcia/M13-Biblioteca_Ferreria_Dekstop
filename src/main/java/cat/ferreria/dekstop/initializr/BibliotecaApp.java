@@ -1,4 +1,4 @@
-package cat.ferreria.dekstop;
+package cat.ferreria.dekstop.initializr;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

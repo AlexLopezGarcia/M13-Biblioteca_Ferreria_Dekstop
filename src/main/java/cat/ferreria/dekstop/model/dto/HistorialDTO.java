@@ -1,4 +1,4 @@
-package cat.ferreria.dekstop.bussines.Model;
+package cat.ferreria.dekstop.model.dto;
 
 public class HistorialDTO {
     private String historialId;

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane alignment="center" hgap="20" prefHeight="448.0" prefWidth="465.0" style="-fx-padding: 20px; -fx-font-size: 16px;" vgap="20" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.controller.CrearLibroController">
+
+    <Label text="ISBN: " GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <TextField fx:id="txtISBN" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+    <Label text="Título:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+    <TextField fx:id="txtTitulo" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+    <Label text="Autor:" GridPane.rowIndex="2" />
+    <TextField fx:id="txtAutor" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+    <Label text="Editorial:" GridPane.rowIndex="3" />
+    <TextField fx:id="txtEditorial" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+    <Label text="Categoría:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+    <TextField fx:id="txtCategoria" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+    <Label text="Cantidad:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+    <TextField fx:id="txtCantidad" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+    <Label text="Estado de Uso:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+    <ComboBox fx:id="cmbEstadoUso" prefWidth="300" promptText="Estado" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+    <Button fx:id="btnGuardar" prefWidth="150" text="Añadir Libro" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+    <columnConstraints>
+        <ColumnConstraints />
+        <ColumnConstraints />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+    </rowConstraints>
+</GridPane>

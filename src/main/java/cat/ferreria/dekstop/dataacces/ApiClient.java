@@ -1,6 +1,6 @@
-package cat.ferreria.dekstop;
+package cat.ferreria.dekstop.dataacces;
 
-import cat.ferreria.dekstop.bussines.Model.Usuario;
+import cat.ferreria.dekstop.model.clazz.Usuario;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 

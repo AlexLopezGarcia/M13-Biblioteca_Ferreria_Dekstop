@@ -1,6 +1,6 @@
-package cat.ferreria.dekstop.Controller;
+package cat.ferreria.dekstop.controller;
 
-import cat.ferreria.dekstop.ApiClient;
+import cat.ferreria.dekstop.dataacces.ApiClient;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
@@ -60,9 +60,3 @@ public class SesionController {
 
     }
 }
-
-
-
-
-
-

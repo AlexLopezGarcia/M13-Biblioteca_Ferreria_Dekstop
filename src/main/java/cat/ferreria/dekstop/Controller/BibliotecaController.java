@@ -1,9 +1,9 @@
-package cat.ferreria.dekstop.Controller;
+package cat.ferreria.dekstop.controller;
 
-import cat.ferreria.dekstop.ApiClient;
-import cat.ferreria.dekstop.bussines.Model.HistorialDTO;
-import cat.ferreria.dekstop.bussines.Model.Libro;
-import cat.ferreria.dekstop.bussines.Model.LibroDTO;
+import cat.ferreria.dekstop.dataacces.ApiClient;
+import cat.ferreria.dekstop.model.dto.HistorialDTO;
+import cat.ferreria.dekstop.model.clazz.Libro;
+import cat.ferreria.dekstop.model.dto.LibroDTO;
 import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -161,7 +161,7 @@ public class BibliotecaController {
     @FXML
     private void abrirRegistroUsuario() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/registrar_usuario.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/registrarUsuario.fxml"));
             Parent root = loader.load();
 
             Stage stage = new Stage();
