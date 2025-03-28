@@ -64,6 +64,52 @@ public class ApiClient {
             return false;
         }
     }
+    public boolean modificarUsuarioEnAPI(Usuario usuario) {
+        String apiUrl = "http://localhost:9090/usuarios";
+        Gson gson = new Gson();
+
+        JsonObject jsonUsuario = new JsonObject();
+        jsonUsuario.addProperty("nombre", usuario.getNombre());
+        jsonUsuario.addProperty("correoElectronico", usuario.getCorreoElectronico());
+        jsonUsuario.addProperty("contrasenya", usuario.getContrasena());
+
+        String usuarioJson = jsonUsuario.toString();
+
+        try {
+            URL url = new URL(apiUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("PUT");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = usuarioJson.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = conn.getResponseCode();
+            return responseCode == 200 || responseCode == 204;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean eliminarUsuarioEnAPI(String correo) {
+        String apiUrl = "http://localhost:9090/usuarios";
+
+        try {
+            URL url = new URL(apiUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("DELETE");
+            conn.setRequestProperty("Accept", "application/json");
+
+            int responseCode = conn.getResponseCode();
+            return responseCode == 200 || responseCode == 204;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 
     private String fetchData(String apiUrl) {

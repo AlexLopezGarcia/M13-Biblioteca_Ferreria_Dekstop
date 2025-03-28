@@ -33,7 +33,7 @@ public class BibliotecaController {
     @FXML private TableColumn<Libro, String> colISBN;
     @FXML private TableColumn<Libro, String> colTitulo;
     @FXML private TableColumn<Libro, String> colAutor;
-    @FXML private TableColumn<Libro, String> colEditorial;
+    @FXML private ComboBox<String> usuarioComboBox;
     @FXML private TableColumn<Libro, String> colCategoria;
     @FXML private TableColumn<Libro, String> colEstado;
 
@@ -181,6 +181,52 @@ public class BibliotecaController {
 
             Stage stage = new Stage();
             stage.setTitle("Iniciar Sesión");
+            stage.setScene(new Scene(root, 600, 400));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @FXML
+    private void manejarAccionUsuario() {
+        String opcionSeleccionada = usuarioComboBox.getValue();
+        if (opcionSeleccionada == null) return;
+
+        switch (opcionSeleccionada) {
+            case "Registrar Usuario":
+                abrirRegistroUsuario();
+                break;
+            case "Modificar Usuario":
+                abrirModificarUsuario();
+                break;
+            case "Eliminar Usuario":
+                abrirEliminarUsuario();
+                break;
+        }
+    }
+
+    // Métodos que abren las respectivas pantallas
+    @FXML
+    private void abrirModificarUsuario() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/modificarUsuario.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Modificar Usuario");
+            stage.setScene(new Scene(root, 600, 400));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void abrirEliminarUsuario() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/eliminarUsuario.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Eliminar Usuario");
             stage.setScene(new Scene(root, 600, 400));
             stage.show();
         } catch (IOException e) {

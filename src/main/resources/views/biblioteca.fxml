@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <?import java.lang.String?>
 <?import javafx.collections.FXCollections?>
+
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.controller.BibliotecaController">
     <top>
         <HBox spacing="10" style="-fx-background-color: #558C01; -fx-padding: 10px;">
@@ -13,6 +13,8 @@
             <Button text="Modificar Libro" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
             <Button text="Añadir Libro" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
             <Pane HBox.hgrow="ALWAYS"/>
+
+            <!-- ComboBox para idiomas -->
             <ComboBox fx:id="idiomaComboBox" style="-fx-background-color: #558C01; -fx-text-fill: white; -fx-font-weight: bold;">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
@@ -23,16 +25,25 @@
                 </items>
             </ComboBox>
 
-            <Button text="Iniciar Sesion"
+            <Button text="Iniciar Sesión"
                     style="-fx-background-color: #444; -fx-text-fill: white;"
                     onAction="#abrirPanelSesion"/>
-            <Button text="Registrar Usuario"
-                    style="-fx-background-color: #444; -fx-text-fill: white;"
-                    onAction="#abrirRegistroUsuario"/>
+
+            <!-- Nuevo ComboBox para gestión de usuarios -->
+            <ComboBox fx:id="usuarioComboBox"
+                      style="-fx-background-color: #444; -fx-text-fill: white;"
+                      onAction="#manejarAccionUsuario">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Registrar Usuario"/>
+                        <String fx:value="Modificar Usuario"/>
+                        <String fx:value="Eliminar Usuario"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
 
         </HBox>
     </top>
-
 
     <center>
         <VBox spacing="10" style="-fx-padding: 20px;">
