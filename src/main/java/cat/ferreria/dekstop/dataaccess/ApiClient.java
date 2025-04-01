@@ -2,30 +2,30 @@ package cat.ferreria.dekstop.dataaccess;
 
 import cat.ferreria.dekstop.model.dtos.LibroDTO;
 import com.google.gson.Gson;
-import java.io.BufferedReader;
-import java.io.InputStream;
+
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
 
 public class ApiClient {
 
-    private final ExecutorService executor = Executors.newCachedThreadPool(); // Manejo eficiente de hilos
-
-    // Obtener la lista de historial
-    public String fetchHistorial() {
-        return fetchData("http://localhost:9090/libros");
+    private CompletableFuture<String> fetchData(String endpoint) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                URL url = new URL(endpoint);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                return readResponse(conn);
+            } catch (Exception e) {
+                System.err.println("Error al realizar la solicitud a " + endpoint + ": " + e.getMessage());
+                return null;
+            }
+        });
     }
 
-    // Obtener los detalles de un libro por ISBN
-    public String fetchLibroByIsbn(String isbn) {
-        return fetchData("http://localhost:9090/libros/" + isbn);
-    }
-
-    // Método POST para crear un libro
     public String createLibro(LibroDTO libroDTO) {
         String apiUrl = "http://localhost:9090/libros";
         try {
@@ -42,75 +42,69 @@ public class ApiClient {
 
             int responseCode = conn.getResponseCode();
             if (responseCode != HttpURLConnection.HTTP_CREATED && responseCode != HttpURLConnection.HTTP_OK) {
-                return "Error: " + responseCode + " - " + readResponse(conn.getErrorStream());
+                return "Error: " + responseCode + " - " + readResponse(conn);
             }
-            return readResponse(conn.getInputStream());
+            return readResponse(conn);
 
         } catch (Exception e) {
             e.printStackTrace();
             return "Error al conectar con la API: " + e.getMessage();
         }
     }
-    // Método DELETE para eliminar un libro por ISBN
-    public boolean eliminarLibroPorIsbn(String isbn) {
-        String apiUrl = "http://localhost:9090/libros/" + isbn;
-        try {
-            URL url = new URL(apiUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("DELETE");
 
-            int responseCode = conn.getResponseCode();
-            return responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_NO_CONTENT;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+    private String readResponse(HttpURLConnection conn) throws Exception {
+        int responseCode = conn.getResponseCode();
+        if (responseCode >= 200 && responseCode < 300) {
+            try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
+                StringBuilder response = new StringBuilder();
+                int c;
+                while ((c = reader.read()) != -1) {
+                    response.append((char) c);
+                }
+                return response.toString();
+            }
+        } else {
+            try (InputStreamReader reader = new InputStreamReader(conn.getErrorStream())) {
+                StringBuilder errorResponse = new StringBuilder();
+                int c;
+                while ((c = reader.read()) != -1) {
+                    errorResponse.append((char) c);
+                }
+                throw new Exception("Error en la solicitud HTTP: " + responseCode + " - " + errorResponse.toString());
+            }
         }
     }
 
+    public String fetchAllLibros() {
+        return fetchData("http://localhost:9090/libros").join();
+    }
 
-    // Método mejorado para realizar peticiones GET con FutureTask
-    public String fetchData(String apiUrl) {
-        Future<String> future = executor.submit(() -> {
-            try {
-                URL url = new URL(apiUrl);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("Accept", "application/json");
+    public String fetchHistorial() {
+        return fetchData("http://localhost:9090/historial").join();
+    }
 
-                int responseCode = conn.getResponseCode();
-                if (responseCode != 200) {
-                    return "ERROR: " + responseCode + " - " + readResponse(conn.getErrorStream());
-                }
-
-                return readResponse(conn.getInputStream());
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "ERROR: " + e.getMessage();
-            }
-        });
-
-        try {
-            String response = future.get();
-            if (response.startsWith("ERROR: ")) {
-                System.err.println("API ERROR: " + response);
-                return null;
-            }
-            return response;
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+    public String fetchLibroByIsbn(String isbn) {
+        if (isbn == null || isbn.trim().isEmpty()) {
+            System.err.println("ISBN nulo o vacío, no se puede realizar la solicitud");
             return null;
         }
+        return fetchData("http://localhost:9090/libros/" + isbn).join();
     }
 
-    // Método para leer la respuesta del InputStream
-    private String readResponse(InputStream inputStream) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-        StringBuilder response = new StringBuilder();
-        String line;
-        while ((line = br.readLine()) != null) {
-            response.append(line);
+    public boolean eliminarLibroPorIsbn(String isbn) {
+        if (isbn == null || isbn.trim().isEmpty()) {
+            System.err.println("ISBN nulo o vacío, no se puede eliminar el libro");
+            return false;
         }
-        return response.toString();
+        try {
+            URL url = new URL("http://localhost:9090/libros/" + isbn);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("DELETE");
+            int responseCode = conn.getResponseCode();
+            return responseCode >= 200 && responseCode < 300;
+        } catch (Exception e) {
+            System.err.println("Error al eliminar el libro con ISBN " + isbn + ": " + e.getMessage());
+            return false;
+        }
     }
 }
