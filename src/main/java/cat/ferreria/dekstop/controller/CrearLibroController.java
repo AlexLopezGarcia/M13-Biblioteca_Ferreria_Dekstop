@@ -6,6 +6,7 @@ import cat.ferreria.dekstop.model.dtos.LibroDTO;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class CrearLibroController {
@@ -18,14 +19,25 @@ public class CrearLibroController {
     @FXML private TextField txtCantidad;
     @FXML private ComboBox<String> cmbEstadoUso;
     @FXML private Button btnGuardar;
-
+    @FXML private Label isbnLabel;
+    @FXML private Label tituloLabel;
+    @FXML private Label autorLabel;
+    @FXML private Label editorialLabel;
+    @FXML private Label categoriaLabel;
+    @FXML private Label cantidadLabel;
+    @FXML private Label estadoLabel;
 
     private ApiClient apiClient = new ApiClient();
-
     private Consumer<Libro> onLibroCreado;
+    private Map<String, String> messages;
 
     public void setOnLibroCreado(Consumer<Libro> onLibroCreado) {
         this.onLibroCreado = onLibroCreado;
+    }
+
+    public void setMessages(Map<String, String> messages) {
+        this.messages = messages;
+        updateUI();
     }
 
     @FXML
@@ -49,18 +61,28 @@ public class CrearLibroController {
         });
     }
 
-
+    private void updateUI() {
+        if (messages == null) return;
+        btnGuardar.setText(messages.get("button.anyadir.libro"));
+        isbnLabel.setText(messages.get("libro.isbn"));
+        tituloLabel.setText(messages.get("libro.titulo"));
+        autorLabel.setText(messages.get("libro.autor"));
+        editorialLabel.setText("Editorial"); // No tienes una clave para esto, puedes añadirla si lo deseas
+        categoriaLabel.setText(messages.get("libro.categoria"));
+        cantidadLabel.setText("Cantidad"); // No tienes una clave para esto, puedes añadirla si lo deseas
+        estadoLabel.setText(messages.get("libro.estado"));
+    }
 
     private void guardarLibro() {
         String isbn = this.txtISBN.getText();
         if (isbn.isEmpty()) {
-            showAlert("Error", "Debes ingresar un ISBN"); //constante
+            showAlert(messages.get("alert.error"), messages.get("alert.completa.campos"));
             return;
         }
 
         String existLibro = apiClient.fetchLibroByIsbn(isbn);
         if (existLibro != null) {
-            showAlert("Error", "El libro con ISBN " + isbn + " ya existe en la base de datos"); //constante
+            showAlert(messages.get("alert.error"), String.format(messages.get("alert.isbn.existe"), isbn));
             return;
         }
 
@@ -71,7 +93,7 @@ public class CrearLibroController {
         String estado = cmbEstadoUso.getSelectionModel().getSelectedItem();
 
         if (txtCantidad.getText().isEmpty()) {
-            showAlert("Error", "Debes ingresar una cantidad valida"); //constante
+            showAlert(messages.get("alert.error"), messages.get("alert.cantidad.invalida"));
             return;
         }
 
@@ -79,28 +101,32 @@ public class CrearLibroController {
         try {
             cantidad = Integer.parseInt(txtCantidad.getText());
             if (cantidad < 0 || cantidad > 99) {
-                showAlert("Error", "La cantidad debe estar entre 0 y 99"); //constante
+                showAlert(messages.get("alert.error"), messages.get("alert.cantidad.rango"));
                 return;
             }
         } catch (NumberFormatException e) {
-            showAlert("Error", "La cantidad debe ser un numero entero"); //constante
+            showAlert(messages.get("alert.error"), messages.get("alert.cantidad.numero"));
             return;
         }
 
         if (titulo.isEmpty() || autor.isEmpty() || categoria.isEmpty() || estado == null) {
-            showAlert("Error", "Completa todos los campos"); //constante
+            showAlert(messages.get("alert.error"), messages.get("alert.completa.campos"));
             return;
         }
 
         LibroDTO libroDTO = new LibroDTO(isbn, titulo, autor, categoria, estado);
         String response = apiClient.createLibro(libroDTO);
 
-        if (response != null) {
-            showAlert("Exito", "El libro ha sido añadido correctamente"); //constante
+        if (response != null && !response.startsWith("Error")) {
+            showAlert(messages.get("alert.exito"), "El libro ha sido añadido correctamente");
+            if (onLibroCreado != null) {
+                Libro libro = new Libro(isbn, titulo, autor, categoria, estado);
+                onLibroCreado.accept(libro);
+            }
             Stage stage = (Stage) btnGuardar.getScene().getWindow();
             stage.close();
         } else {
-            showAlert("Error", "No se ha podido añadir el libro"); //constante
+            showAlert(messages.get("alert.error"), "No se ha podido añadir el libro");
         }
     }
 
