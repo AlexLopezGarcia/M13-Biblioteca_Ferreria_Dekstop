@@ -1,81 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import java.lang.String?>
-<?import javafx.collections.FXCollections?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.controller.BibliotecaController">
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.controller.BibliotecaController">
     <top>
         <HBox spacing="10" style="-fx-background-color: #558C01; -fx-padding: 10px;">
-            <Button text="Registrar Devolución" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
-            <Button text="Registrar Préstamo" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
-            <Button text="Eliminar Libro" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
-            <Button text="Modificar Libro" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
-            <Button text="Añadir Libro" style="-fx-background-color: #418101; -fx-text-fill: white; -fx-font-weight: bold;" />
-            <Pane HBox.hgrow="ALWAYS"/>
-
-            <!-- ComboBox para idiomas -->
-            <ComboBox fx:id="idiomaComboBox" style="-fx-background-color: #558C01; -fx-text-fill: white; -fx-font-weight: bold;">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Español"/>
-                        <String fx:value="Catalán"/>
-                        <String fx:value="Inglés"/>
-                    </FXCollections>
-                </items>
-            </ComboBox>
-
-            <Button text="Iniciar Sesión"
-                    style="-fx-background-color: #444; -fx-text-fill: white;"
-                    onAction="#abrirPanelSesion"/>
-
-            <!-- Nuevo ComboBox para gestión de usuarios -->
-            <ComboBox fx:id="usuarioComboBox"
-                      style="-fx-background-color: #444; -fx-text-fill: white;"
-                      onAction="#manejarAccionUsuario">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Registrar Usuario"/>
-                        <String fx:value="Modificar Usuario"/>
-                        <String fx:value="Eliminar Usuario"/>
-                    </FXCollections>
-                </items>
-            </ComboBox>
-
+            <Button fx:id="btnRegistrarDevolucion" />
+            <Button fx:id="btnRegistrarPrestamo" />
+            <Button fx:id="btnEliminar" />
+            <Button fx:id="btnModificar" />
+            <Button fx:id="btnAnyadir" />
+            <Pane HBox.hgrow="ALWAYS" />
+            <ComboBox fx:id="languageSelector" />
+            <Button fx:id="btnLogarse" />
+            <Button fx:id="btnRegistrarUsuario" />
         </HBox>
     </top>
 
     <center>
-        <VBox spacing="10" style="-fx-padding: 20px;">
-            <Label text="Biblioteca" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+        <VBox spacing="10">
             <GridPane hgap="10" vgap="10">
-                <Label text="ISBN:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <TextField fx:id="isbnField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <Label fx:id="isbnLabel" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <TextField fx:id="isbnField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-                <Label text="Título:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-                <TextField fx:id="tituloField" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+                <Label fx:id="tituloLabel" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                <TextField fx:id="tituloField" GridPane.columnIndex="3" GridPane.rowIndex="0" />
 
-                <Label text="Autor:" GridPane.rowIndex="0" GridPane.columnIndex="4"/>
-                <TextField fx:id="autorField" GridPane.rowIndex="0" GridPane.columnIndex="5"/>
+                <Label fx:id="autorLabel" GridPane.columnIndex="4" GridPane.rowIndex="0" />
+                <TextField fx:id="autorField" GridPane.columnIndex="5" GridPane.rowIndex="0" />
 
-                <Button text="Buscar" fx:id="buscarButton" GridPane.rowIndex="0" GridPane.columnIndex="6"/>
+                <Button fx:id="buscarButton" GridPane.columnIndex="6" GridPane.rowIndex="0" />
 
-                <Label text="Editorial:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                <TextField fx:id="editorialField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                <Label fx:id="categoriaLabel" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <ComboBox fx:id="categoriaComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                <Label text="Categoría:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-                <ComboBox fx:id="categoriaComboBox" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+                <Button fx:id="btnRecargar" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+
+                <columnConstraints>
+                    <ColumnConstraints />
+                    <ColumnConstraints />
+                    <ColumnConstraints />
+                    <ColumnConstraints />
+                    <ColumnConstraints />
+                    <ColumnConstraints />
+                    <ColumnConstraints />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints />
+                    <RowConstraints />
+                </rowConstraints>
+                <VBox.margin>
+                    <Insets left="10.0" top="10.0" />
+                </VBox.margin>
             </GridPane>
 
             <TableView fx:id="tablaLibros" style="-fx-font-size: 14px;">
                 <columns>
-                    <TableColumn text="ISBN" fx:id="colISBN"/>
-                    <TableColumn text="Título" fx:id="colTitulo"/>
-                    <TableColumn text="Autor" fx:id="colAutor"/>
-                    <TableColumn text="Editorial" fx:id="colEditorial"/>
-                    <TableColumn text="Categoría" fx:id="colCategoria"/>
-                    <TableColumn text="Estado de Uso" fx:id="colEstado"/>
+                    <TableColumn fx:id="colISBN" />
+                    <TableColumn fx:id="colTitulo" />
+                    <TableColumn fx:id="colAutor" />
+                    <TableColumn fx:id="colCategoria" />
+                    <TableColumn fx:id="colEstado" />
                 </columns>
+                <VBox.margin>
+                    <Insets bottom="20.0" left="20.0" right="20.0" />
+                </VBox.margin>
             </TableView>
         </VBox>
     </center>
