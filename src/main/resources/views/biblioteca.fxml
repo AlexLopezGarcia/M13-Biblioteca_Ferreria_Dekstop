@@ -7,35 +7,36 @@
 <BorderPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.controller.BibliotecaController">
     <top>
         <HBox spacing="10" style="-fx-background-color: #558C01; -fx-padding: 10px;">
-            <Button text="Registrar Devolución" fx:id="btnRegistrarDevolucion"/>
-            <Button text="Registrar Préstamo" fx:id="btnRegistrarPrestamo"/>
-            <Button text="Eliminar Libro" fx:id="btnEliminar"/>
-            <Button text="Modificar Libro" fx:id="btnModificar"/>
-            <Button text="Añadir Libro" fx:id="btnAnyadir"/>
+            <Button fx:id="btnRegistrarDevolucion" />
+            <Button fx:id="btnRegistrarPrestamo" />
+            <Button fx:id="btnEliminar" />
+            <Button fx:id="btnModificar" />
+            <Button fx:id="btnAnyadir" />
             <Pane HBox.hgrow="ALWAYS" />
-            <Button text="Logarse" fx:id="btnLogarse"/>
-            <Button text="Registrar Usuario" fx:id="btnRegistrarUsuario"/>
+            <ComboBox fx:id="languageSelector" />
+            <Button fx:id="btnLogarse" />
+            <Button fx:id="btnRegistrarUsuario" />
         </HBox>
     </top>
 
     <center>
         <VBox spacing="10">
             <GridPane hgap="10" vgap="10">
-                <Label text="ISBN:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <Label fx:id="isbnLabel" GridPane.columnIndex="0" GridPane.rowIndex="0" />
                 <TextField fx:id="isbnField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-                <Label text="Título:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                <Label fx:id="tituloLabel" GridPane.columnIndex="2" GridPane.rowIndex="0" />
                 <TextField fx:id="tituloField" GridPane.columnIndex="3" GridPane.rowIndex="0" />
 
-                <Label text="Autor:" GridPane.columnIndex="4" GridPane.rowIndex="0" />
+                <Label fx:id="autorLabel" GridPane.columnIndex="4" GridPane.rowIndex="0" />
                 <TextField fx:id="autorField" GridPane.columnIndex="5" GridPane.rowIndex="0" />
 
-                <Button fx:id="buscarButton" text="Buscar" GridPane.columnIndex="6" GridPane.rowIndex="0" />
+                <Button fx:id="buscarButton" GridPane.columnIndex="6" GridPane.rowIndex="0" />
 
-                <Label text="Categoría:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <Label fx:id="categoriaLabel" GridPane.columnIndex="0" GridPane.rowIndex="1" />
                 <ComboBox fx:id="categoriaComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                <Button text="Recargar Lista" fx:id="btnRecargar" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <Button fx:id="btnRecargar" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
 
                 <columnConstraints>
                     <ColumnConstraints />
@@ -57,11 +58,11 @@
 
             <TableView fx:id="tablaLibros" style="-fx-font-size: 14px;">
                 <columns>
-                    <TableColumn fx:id="colISBN" text="ISBN" />
-                    <TableColumn fx:id="colTitulo" text="Título" />
-                    <TableColumn fx:id="colAutor" text="Autor" />
-                    <TableColumn fx:id="colCategoria" text="Categoría" />
-                    <TableColumn fx:id="colEstado" text="Estado de Uso" />
+                    <TableColumn fx:id="colISBN" />
+                    <TableColumn fx:id="colTitulo" />
+                    <TableColumn fx:id="colAutor" />
+                    <TableColumn fx:id="colCategoria" />
+                    <TableColumn fx:id="colEstado" />
                 </columns>
                 <VBox.margin>
                     <Insets bottom="20.0" left="20.0" right="20.0" />
