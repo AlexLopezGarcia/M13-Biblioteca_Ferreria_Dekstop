@@ -18,6 +18,8 @@ public class SesionController {
     @FXML
     private Label errorLabel;
 
+    @FXML private ComboBox<String> usuarioComboBox;
+
     @FXML
     private Label olvidadoLabel;
 
@@ -41,6 +43,7 @@ public class SesionController {
         if (credencialesValidas) {
             mostrarMensajeExito("Inicio de sesión exitoso.");
             errorLabel.setVisible(false);
+            usuarioComboBox.setVisible(true);
         } else {
             errorLabel.setText("Correo o contraseña incorrectos");
             errorLabel.setStyle("-fx-text-fill: red;");

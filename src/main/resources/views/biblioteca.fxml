@@ -4,6 +4,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <BorderPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.controller.BibliotecaController">
     <top>
         <HBox spacing="10" style="-fx-background-color: #558C01; -fx-padding: 10px;">
@@ -13,9 +15,22 @@
             <Button fx:id="btnModificar" />
             <Button fx:id="btnAnyadir" />
             <Pane HBox.hgrow="ALWAYS" />
-            <ComboBox fx:id="languageSelector" />
-            <Button fx:id="btnLogarse" />
-            <Button fx:id="btnRegistrarUsuario" />
+            <ComboBox fx:id="languageSelector" prefWidth="150" />
+            <Button fx:id="btnLogarse" onAction="#abrirPanelSesion"/>
+
+            <!-- Nuevo ComboBox para acciones de usuario -->
+            <ComboBox fx:id="usuarioComboBox" prefWidth="180" onAction="#accionUsuario">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Registrar Usuario" />
+                        <String fx:value="Modificar Usuario" />
+                    </FXCollections>
+
+                </items>
+                <value>
+                    <String fx:value="Registrar Usuario" />
+                </value>
+            </ComboBox>
         </HBox>
     </top>
 

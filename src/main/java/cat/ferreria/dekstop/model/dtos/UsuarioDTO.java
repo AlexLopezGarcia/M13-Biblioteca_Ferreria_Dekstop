@@ -6,6 +6,13 @@ public class UsuarioDTO {
     private String contrasena;
     private String correoElectronico;
 
+    public UsuarioDTO(String dni, String nombre, String correoElectronico) {
+        this.dni = dni;
+        this.nombre = nombre;
+        this.contrasena = contrasena;
+        this.correoElectronico = correoElectronico;
+    }
+
     public String getDni() { return dni; }
     public String getNombre() { return nombre; }
     public String getContrasena() { return contrasena; }
