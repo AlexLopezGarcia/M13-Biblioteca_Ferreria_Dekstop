@@ -91,14 +91,14 @@ public class ApiClient {
             return false;
         }
     }
-    public boolean modificarUsuarioEnAPI(String dni, UsuarioDTO usuario) {
-        String apiUrl = "http://localhost:9090/usuarios/" + usuario.getDni();
+    public boolean modificarUsuarioEnAPI(String dniAntiguo, UsuarioDTO usuarioNuevo) {
+        String apiUrl = "http://localhost:9090/usuarios/" + dniAntiguo; // DNI viejo
         Gson gson = new Gson();
 
         JsonObject jsonUsuario = new JsonObject();
-        jsonUsuario.addProperty("dni", dni);
-        jsonUsuario.addProperty("nombre", usuario.getNombre());
-        jsonUsuario.addProperty("correoElectronico", usuario.getCorreoElectronico());
+        jsonUsuario.addProperty("dni", usuarioNuevo.getDni());  // DNI nuevo
+        jsonUsuario.addProperty("nombre", usuarioNuevo.getNombre());
+        jsonUsuario.addProperty("correoElectronico", usuarioNuevo.getCorreoElectronico());
 
         String usuarioJson = jsonUsuario.toString();
 
@@ -121,6 +121,7 @@ public class ApiClient {
             return false;
         }
     }
+
     public boolean eliminarUsuarioEnAPI(String dni) {
         try {
             HttpClient client = HttpClient.newHttpClient();

@@ -95,7 +95,7 @@ public class ModificarUsuarioController {
         dialog.setTitle("Editar Usuario");
 
         Label labelDni = new Label("DNI:");
-        TextField tfDni = new TextField(usuario.getDni());  // Editable ahora
+        TextField tfDni = new TextField(usuario.getDni());
 
         Label labelNombre = new Label("Nombre:");
         TextField tfNombre = new TextField(usuario.getNombre());
@@ -120,7 +120,33 @@ public class ModificarUsuarioController {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == ButtonType.OK) {
-                return new UsuarioDTO(tfDni.getText(), tfNombre.getText(), tfCorreo.getText());
+                String dni = tfDni.getText().trim();
+                String nombre = tfNombre.getText().trim();
+                String correo = tfCorreo.getText().trim();
+
+                // Validación
+                StringBuilder errores = new StringBuilder();
+
+                if (dni.isEmpty() || nombre.isEmpty() || correo.isEmpty()) {
+                    errores.append("Todos los campos deben estar rellenados.\n");
+                }
+                if (!dni.matches("^[0-9]{8}[A-Za-z]$")) {
+                    errores.append("- DNI incorrecto. Debe tener 8 números y 1 letra.\n");
+                }
+                if (nombre.length() < 2 || nombre.length() > 30) {
+                    errores.append("- El nombre debe tener al menos 2 caracteres y menos de 30.\n");
+                }
+                String regexCorreo = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+                if (!Pattern.matches(regexCorreo, correo)) {
+                    errores.append("- Correo electrónico inválido.\n");
+                }
+
+                if (errores.length() > 0) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error en la modificación", "Se han encontrado errores", errores.toString());
+                    return null;
+                }
+
+                return new UsuarioDTO(dni, nombre, correo);
             }
             return null;
         });
@@ -135,6 +161,7 @@ public class ModificarUsuarioController {
             }
         });
     }
+
 
     private void cargarUsuariosDesdeApi() {
         String jsonUsuarios = apiClient.fetchUsuarios();

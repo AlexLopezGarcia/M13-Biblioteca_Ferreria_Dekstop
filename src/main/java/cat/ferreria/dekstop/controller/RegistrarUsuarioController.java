@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class RegistrarUsuarioController {
@@ -39,8 +40,8 @@ public class RegistrarUsuarioController {
         if (!dni.matches("^[0-9]{8}[A-Za-z]$")) {
             errores.append("- DNI incorrecto. Debe tener 8 números y 1 letra.\n");
         }
-        if (nombre.length() < 2) {
-            errores.append("- El nombre debe tener al menos 2 caracteres.\n");
+        if (nombre.length() < 2 && nombre.length() > 30) {
+            errores.append("- El nombre debe tener al menos 2 caracteres y menos de 30.\n");
         }
         String regexCorreo = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
         if (!Pattern.matches(regexCorreo, correo)) {
