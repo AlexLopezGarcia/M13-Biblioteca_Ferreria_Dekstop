@@ -18,7 +18,7 @@ public class PantallaModificarLibro {
 
     public void show() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ModificarLibro.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/modificarLibro.fxml"));
             Parent root = loader.load();
 
             ModificarLibroController controller = loader.getController();
