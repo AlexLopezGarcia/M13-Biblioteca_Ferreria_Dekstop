@@ -193,7 +193,7 @@ public class BibliotecaController {
                 libros.remove(libroSeleccionado);
                 cargarLibrosDesdeApi(); // Actualizar la tabla después de eliminar un libro
             } else {
-                showAlert(messages.get("alert.error"), "No se pudo eliminar el libro");
+                showAlert(messages.get("alert.error"), messages.get("alerto.libro.noeliminado"));
             }
         } else {
             showAlert(messages.get("alert.error"), messages.get("alert.no.seleccionado"));
