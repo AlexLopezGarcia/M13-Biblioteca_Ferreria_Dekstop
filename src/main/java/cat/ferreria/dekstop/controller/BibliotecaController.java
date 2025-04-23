@@ -84,7 +84,7 @@ public class BibliotecaController {
                 messages = messageFetcher.apply(selectedLang);
                 updateUI();
             } catch (Exception e) {
-                showAlert(messages.get("alert.error"), "No se pudo cambiar el idioma");
+                showAlert(messages.get("alert.error"), messages.get("alert.error.idioma"));
             }
         });
 
@@ -169,7 +169,7 @@ public class BibliotecaController {
         } catch(Exception e) {
             e.printStackTrace();
             System.out.println("Error al abrir la pantalla de crear libro");
-            showAlert(messages.get("alert.error"), "Error al abrir la pantalla de crear libro");
+            showAlert(messages.get("alert.error"), messages.get("alert.abrir.pantalla.libro"));
         }
     }
 
