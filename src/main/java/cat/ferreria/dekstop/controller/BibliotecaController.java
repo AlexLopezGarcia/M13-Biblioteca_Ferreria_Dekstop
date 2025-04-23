@@ -148,8 +148,7 @@ public class BibliotecaController {
             }
         } else {
             System.out.println("Error al obtener los libros de la API");
-            showAlert(messages.get("alert.error"), "No se pudo cargar la lista de libros. Asegúrate de que la API esté ejecutándose.");
-        }
+       }
     }
 
     private void buscarLibros() {
