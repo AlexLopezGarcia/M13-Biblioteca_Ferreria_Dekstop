@@ -91,7 +91,13 @@ public class BibliotecaApp extends Application {
                     Map.entry("alert.cantidad.invalida", "Debes ingresar una cantidad válida"),
                     Map.entry("alert.isbn.existe", "El libro con ISBN {0} ya existe en la base de datos"),
                     Map.entry("alert.cantidad.rango", "La cantidad debe estar entre 0 y 99"),
-                    Map.entry("alert.cantidad.numero", "La cantidad debe ser un número entero")
+                    Map.entry("alert.cantidad.numero", "La cantidad debe ser un número entero"),
+                    Map.entry("label.registro", "Formulario de Registro"),
+                    Map.entry("label.dni", "DNI"),
+                    Map.entry("label.nombre", "Nombre"),
+                    Map.entry("label.correo", "Correo Electrónico"),
+                    Map.entry("label.contrasena", "Contraseña"),
+                    Map.entry("label.registrar.usuario", "Registro Usuario")
             );
         }
     }

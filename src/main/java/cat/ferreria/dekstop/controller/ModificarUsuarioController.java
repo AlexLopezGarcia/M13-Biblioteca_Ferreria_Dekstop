@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class ModificarUsuarioController {
@@ -23,6 +24,9 @@ public class ModificarUsuarioController {
     @FXML private CheckBox seleccionarTodosCheckBox;
     @FXML private Button btnEditarUsuario;
     @FXML private Button btnEliminarUsuario;
+    @FXML private Label LabelDni;
+    @FXML private Label LabelNombre;
+    @FXML private Label LabelCorreo;
 
     @FXML private TableView<Usuario> tablaUsuarios;
     @FXML private TableColumn<Usuario, String> colDni;
@@ -31,7 +35,29 @@ public class ModificarUsuarioController {
 
     private ApiClient apiClient = new ApiClient();
     private ObservableList<Usuario> usuarios = FXCollections.observableArrayList();
+    private Map<String, String> messages;
 
+    public void setMessages(Map<String, String> messages) {
+        this.messages = messages;
+        updateUI(); // <-- Aquí actualizamos los textos visibles (botones, etc.)
+    }
+
+    private void updateUI() {
+        if (messages == null) return;
+
+        buscarButton.setText(messages.get("button.buscar"));
+        btnEditarUsuario.setText(messages.get("button.editar.usuario"));
+        btnEliminarUsuario.setText(messages.get("button.eliminar.usuario"));
+        seleccionarTodosCheckBox.setText(messages.get("checkbox.seleccionar.todos"));
+
+        LabelDni.setText(messages.get("label.dni"));
+        colDni.setText(messages.get("label.columna.dni"));
+        LabelNombre.setText(messages.get("label.nombre"));
+        colNombre.setText(messages.get("label.columna.nombre"));
+        LabelCorreo.setText(messages.get("label.correo"));
+        colCorreo.setText(messages.get("label.columna.correo"));
+
+    }
     @FXML
     public void initialize() {
         configurarTabla();
@@ -49,6 +75,7 @@ public class ModificarUsuarioController {
         });
     }
 
+
     private void configurarTabla() {
         colDni.setCellValueFactory(new PropertyValueFactory<>("dni"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
@@ -61,7 +88,11 @@ public class ModificarUsuarioController {
         btnEditarUsuario.setOnAction(event -> {
             ObservableList<Usuario> seleccionados = tablaUsuarios.getSelectionModel().getSelectedItems();
             if (seleccionados.size() != 1) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Selección inválida", "Debes seleccionar un único usuario", "Selecciona solo un usuario para editar.");
+                mostrarAlerta(Alert.AlertType.WARNING,
+                        messages.get("alert.seleccion.unica.titulo"),
+                        messages.get("alert.seleccion.unica.cabecera"),
+                        messages.get("alert.seleccion.unica.contenido"));
+
             } else {
                 mostrarVentanaEdicion(seleccionados.get(0));
             }
@@ -70,7 +101,10 @@ public class ModificarUsuarioController {
         btnEliminarUsuario.setOnAction(event -> {
             ObservableList<Usuario> seleccionados = tablaUsuarios.getSelectionModel().getSelectedItems();
             if (seleccionados.isEmpty()) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Nada seleccionado", "No se seleccionó ningún usuario", "Selecciona al menos uno.");
+                mostrarAlerta(Alert.AlertType.WARNING,
+                        messages.get("alert.seleccion.unica.titulo"),
+                        messages.get("alert.seleccion.unica.cabecera"),
+                        messages.get("alert.seleccion.unica.contenido"));
                 return;
             }
 
@@ -84,7 +118,10 @@ public class ModificarUsuarioController {
                     for (Usuario usuario : seleccionados) {
                         apiClient.eliminarUsuarioEnAPI(usuario.getDni());
                     }
-                    mostrarAlerta(Alert.AlertType.INFORMATION, "Eliminación completada", "Usuarios eliminados correctamente", "");
+                    mostrarAlerta(Alert.AlertType.WARNING,
+                            messages.get("alert.seleccion.unica.titulo"),
+                            messages.get("alert.seleccion.unica.cabecera"),
+                            messages.get("alert.seleccion.unica.contenido"));
                     cargarUsuariosDesdeApi();
                 }
             });
@@ -124,27 +161,31 @@ public class ModificarUsuarioController {
                 String nombre = tfNombre.getText().trim();
                 String correo = tfCorreo.getText().trim();
 
-                // Validación
                 StringBuilder errores = new StringBuilder();
 
                 if (dni.isEmpty() || nombre.isEmpty() || correo.isEmpty()) {
-                    errores.append("Todos los campos deben estar rellenados.\n");
+                    errores.append(messages.get("alert.validacion.vacia")).append("\n");
                 }
                 if (!dni.matches("^[0-9]{8}[A-Za-z]$")) {
-                    errores.append("- DNI incorrecto. Debe tener 8 números y 1 letra.\n");
+                    errores.append(messages.get("alert.validacion.dni")).append("\n");
                 }
                 if (nombre.length() < 2 || nombre.length() > 30) {
-                    errores.append("- El nombre debe tener al menos 2 caracteres y menos de 30.\n");
+                    errores.append(messages.get("alert.validacion.nombre")).append("\n");
                 }
                 String regexCorreo = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
                 if (!Pattern.matches(regexCorreo, correo)) {
-                    errores.append("- Correo electrónico inválido.\n");
+                    errores.append(messages.get("alert.validacion.correo")).append("\n");
                 }
 
+
                 if (errores.length() > 0) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error en la modificación", "Se han encontrado errores", errores.toString());
+                    mostrarAlerta(Alert.AlertType.ERROR,
+                            messages.get("alert.error"),
+                            messages.get("alert.validacion.cabecera"),
+                            errores.toString());
                     return null;
                 }
+
 
                 return new UsuarioDTO(dni, nombre, correo);
             }
@@ -154,10 +195,16 @@ public class ModificarUsuarioController {
         dialog.showAndWait().ifPresent(usuarioDTO -> {
             boolean modificado = apiClient.modificarUsuarioEnAPI(usuario.getDni(), usuarioDTO);
             if (modificado) {
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "Usuario modificado correctamente", "Los cambios se han guardado.");
+                mostrarAlerta(Alert.AlertType.WARNING,
+                        messages.get("alert.seleccion.unica.titulo"),
+                        messages.get("alert.seleccion.unica.cabecera"),
+                        messages.get("alert.seleccion.unica.contenido"));
                 cargarUsuariosDesdeApi();
             } else {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo modificar el usuario", "Intenta nuevamente.");
+                mostrarAlerta(Alert.AlertType.WARNING,
+                        messages.get("alert.seleccion.unica.titulo"),
+                        messages.get("alert.seleccion.unica.cabecera"),
+                        messages.get("alert.seleccion.unica.contenido"));
             }
         });
     }
@@ -173,7 +220,10 @@ public class ModificarUsuarioController {
                 usuarios.add(new Usuario(dto.getDni(), dto.getNombre(), dto.getContrasena(), dto.getCorreoElectronico()));
             }
         } else {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudieron cargar los usuarios", "Verifica la conexión o el servidor.");
+            mostrarAlerta(Alert.AlertType.WARNING,
+                    messages.get("alert.seleccion.unica.titulo"),
+                    messages.get("alert.seleccion.unica.cabecera"),
+                    messages.get("alert.seleccion.unica.contenido"));
         }
     }
     private void buscarUsuarios() {
@@ -195,8 +245,10 @@ public class ModificarUsuarioController {
         }
 
         if (filtrados.isEmpty()) {
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Sin resultados", null, "No se encontraron usuarios con los criterios ingresados.");
+            mostrarAlerta(Alert.AlertType.INFORMATION,
+                    messages.get("alert.resultado.vacio"), null, "");
         }
+
 
         tablaUsuarios.setItems(filtrados);
     }

@@ -3,8 +3,15 @@ package cat.ferreria.dekstop.controller;
 import cat.ferreria.dekstop.dataaccess.ApiClient;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 public class SesionController {
+
+    private BibliotecaController bibliotecaController;
+
+    public void setBibliotecaController(BibliotecaController controller) {
+        this.bibliotecaController = controller;
+    }
 
     @FXML
     private TextField correoTextField;
@@ -43,12 +50,16 @@ public class SesionController {
         if (credencialesValidas) {
             mostrarMensajeExito("Inicio de sesión exitoso.");
             errorLabel.setVisible(false);
-            usuarioComboBox.setVisible(true);
-        } else {
-            errorLabel.setText("Correo o contraseña incorrectos");
-            errorLabel.setStyle("-fx-text-fill: red;");
-            errorLabel.setVisible(true);
+
+            // Muestra los botones desde el controlador principal
+            if (bibliotecaController != null) {
+                bibliotecaController.mostrarBotonesUsuario();
+            }
+
+            // Cierra la ventana de sesión
+            ((Stage) btnIniciarSesion.getScene().getWindow()).close();
         }
+
     }
 
     private void mostrarMensajeExito(String mensaje) {

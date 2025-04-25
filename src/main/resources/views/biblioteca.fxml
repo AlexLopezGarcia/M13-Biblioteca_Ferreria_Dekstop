@@ -4,8 +4,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
 <BorderPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.controller.BibliotecaController">
     <top>
         <HBox spacing="10" style="-fx-background-color: #558C01; -fx-padding: 10px;">
@@ -14,23 +12,15 @@
             <Button fx:id="btnEliminar" />
             <Button fx:id="btnModificar" />
             <Button fx:id="btnAnyadir" />
+
             <Pane HBox.hgrow="ALWAYS" />
+
+            <!-- Ahora estos botones están pegados al ComboBox de idioma -->
+            <Button fx:id="btnRegistrarUsuario" onAction="#abrirRegistroUsuario" text="Registrar Usuario" />
+            <Button fx:id="btnModificarUsuario" onAction="#abrirModificarUsuario" text="Modificar Usuario" />
+
             <ComboBox fx:id="languageSelector" prefWidth="150" />
-            <Button fx:id="btnLogarse" onAction="#abrirPanelSesion"/>
-
-            <!-- Nuevo ComboBox para acciones de usuario -->
-            <ComboBox fx:id="usuarioComboBox" prefWidth="180" onAction="#accionUsuario">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Registrar Usuario" />
-                        <String fx:value="Modificar Usuario" />
-                    </FXCollections>
-
-                </items>
-                <value>
-                    <String fx:value="Registrar Usuario" />
-                </value>
-            </ComboBox>
+            <Button fx:id="btnLogarse" onAction="#abrirPanelSesion" />
         </HBox>
     </top>
 

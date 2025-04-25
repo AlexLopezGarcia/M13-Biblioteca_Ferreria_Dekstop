@@ -61,8 +61,9 @@ public class BibliotecaController {
     @FXML private Button btnRegistrarDevolucion;
     @FXML private Button btnRegistrarPrestamo;
     @FXML private Button btnLogarse;
+    @FXML private Button btnRegistrarUsuario;
+    @FXML private Button btnModificarUsuario;
     @FXML private ComboBox<Idioma> languageSelector;
-    @FXML private ComboBox<String> usuarioComboBox;
     @FXML private Label isbnLabel;
     @FXML private Label tituloLabel;
     @FXML private Label autorLabel;
@@ -112,6 +113,8 @@ public class BibliotecaController {
         configurarComboBoxIdiomas();
 
         // Botones
+        btnRegistrarUsuario.setVisible(false);
+        btnModificarUsuario.setVisible(false);
         btnAnyadir.setOnAction(event -> openPantallaCrearLibro());
         buscarButton.setOnAction(event -> buscarLibros());
         btnEliminar.setOnAction(event -> eliminarLibro());
@@ -183,6 +186,8 @@ public class BibliotecaController {
         btnLogarse.setText(messages.get("button.logarse"));
         buscarButton.setText(messages.get("button.buscar"));
         btnRecargar.setText(messages.get("button.recargar.lista"));
+        btnRegistrarUsuario.setText(messages.get("button.registrar.usuario"));
+        btnModificarUsuario.setText(messages.get("button.modificar.usuario")); // Asegúrate de que esta clave exista
 
         colISBN.setText(messages.get("libro.isbn"));
         colTitulo.setText(messages.get("libro.titulo"));
@@ -190,6 +195,7 @@ public class BibliotecaController {
         colCategoria.setText(messages.get("libro.categoria"));
         colEstado.setText(messages.get("libro.estado"));
     }
+
 
     private void cargarLibrosDesdeApi() {
         String jsonLibros = apiClient.fetchAllLibros();
@@ -233,20 +239,29 @@ public class BibliotecaController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/registrarUsuario.fxml"));
             Parent root = loader.load();
 
+            // Obtener el controlador para pasarle los mensajes
+            RegistrarUsuarioController controller = loader.getController();
+            controller.setMessages(messages); // <--- Esta línea es clave
+
             Stage stage = new Stage();
-            stage.setTitle("Registro de Usuario");
+            stage.setTitle(messages.getOrDefault("form.registro", "Registro de Usuario")); // título traducido
             stage.setScene(new Scene(root, 600, 400));
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            showAlert("Error", "No se pudo abrir la pantalla para registrar usuario.");
         }
     }
+
 
     @FXML
     private void abrirPanelSesion() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/sesion.fxml"));
             Parent root = loader.load();
+
+            SesionController controller = loader.getController();
+            controller.setBibliotecaController(this); // <- pasamos la referencia
 
             Stage stage = new Stage();
             stage.setTitle("Iniciar Sesión");
@@ -256,22 +271,12 @@ public class BibliotecaController {
             e.printStackTrace();
         }
     }
-    @FXML
-    private void accionUsuario() {
-        String opcionSeleccionada = usuarioComboBox.getValue();
-        if (opcionSeleccionada == null) {
-            return;
-        }
-
-        switch (opcionSeleccionada) {
-            case "Registrar Usuario":
-                abrirRegistroUsuario();
-                break;
-            case "Modificar Usuario":
-                abrirModificarUsuario();
-                break;
-        }
+    public void mostrarBotonesUsuario() {
+        btnRegistrarUsuario.setVisible(true);
+        btnModificarUsuario.setVisible(true);
     }
+
+
 
     // Métodos que abren las respectivas pantallas
     @FXML
@@ -279,6 +284,10 @@ public class BibliotecaController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/modificarUsuario.fxml"));
             Parent root = loader.load();
+
+            ModificarUsuarioController controller = loader.getController();
+            controller.setMessages(messages);  // ¡Aquí se pasa el idioma actual!
+
             Stage stage = new Stage();
             stage.setTitle("Modificar Usuario");
             stage.setScene(new Scene(root, 600, 400));
@@ -287,6 +296,7 @@ public class BibliotecaController {
             e.printStackTrace();
         }
     }
+
 
     private void eliminarLibro() {
         Libro libro = tablaLibros.getSelectionModel().getSelectedItem();
