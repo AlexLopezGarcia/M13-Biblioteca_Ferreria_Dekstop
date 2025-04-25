@@ -205,7 +205,7 @@ public class BibliotecaController {
             libros.clear();
             for (LibroDTO dto : librosArray) {
                 if (dto != null && dto.getIsbn() != null) {
-                    libros.add(new Libro(dto.getIsbn(), dto.getTitulo(), dto.getAutor(), dto.getCategoria(), dto.getEstado()));
+                    libros.add(new Libro(dto.getLibro_id(), dto.getIsbn(), dto.getTitulo(), dto.getAutor(), dto.getCategoria(), dto.getEstado()));
                 }
             }
         } else {
