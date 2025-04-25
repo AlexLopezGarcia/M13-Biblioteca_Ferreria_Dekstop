@@ -21,7 +21,7 @@ public class PantallaCrearLibro {
 
     public void show() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/CrearLibro.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/crearLibro.fxml"));
             Parent root = loader.load();
 
             CrearLibroController controller = loader.getController();

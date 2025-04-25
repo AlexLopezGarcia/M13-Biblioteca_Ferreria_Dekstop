@@ -4,7 +4,7 @@ import cat.ferreria.dekstop.dataaccess.ApiClient;
 import cat.ferreria.dekstop.model.dtos.HistorialDTO;
 import cat.ferreria.dekstop.model.clazz.Libro;
 import cat.ferreria.dekstop.model.dtos.LibroDTO;
-import cat.ferreria.dekstop.vistas.PantallaCrearLibro;
+import cat.ferreria.dekstop.vistas.*;
 import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -84,12 +84,13 @@ public class BibliotecaController {
                 messages = messageFetcher.apply(selectedLang);
                 updateUI();
             } catch (Exception e) {
-                showAlert(messages.get("alert.error"), "No se pudo cambiar el idioma");
+                showAlert(messages.get("alert.error"), messages.get("alert.error.idioma"));
             }
         });
 
         // Configurar acciones de los botones
         btnAnyadir.setOnAction(event -> openPantallaCrearLibro());
+        btnModificar.setOnAction(event -> openPantallaModificarLibro());
         buscarButton.setOnAction(event -> buscarLibros());
         btnEliminar.setOnAction(event -> eliminarLibro());
         btnRecargar.setOnAction(event -> recargarLibros());
@@ -147,8 +148,7 @@ public class BibliotecaController {
             }
         } else {
             System.out.println("Error al obtener los libros de la API");
-            showAlert(messages.get("alert.error"), "No se pudo cargar la lista de libros. Asegúrate de que la API esté ejecutándose.");
-        }
+       }
     }
 
     private void buscarLibros() {
@@ -169,7 +169,19 @@ public class BibliotecaController {
         } catch(Exception e) {
             e.printStackTrace();
             System.out.println("Error al abrir la pantalla de crear libro");
-            showAlert(messages.get("alert.error"), "Error al abrir la pantalla de crear libro");
+            showAlert(messages.get("alert.error"), messages.get("alert.abrir.pantalla.libro"));
+        }
+    }
+
+    private void openPantallaModificarLibro() {
+        PantallaModificarLibro pantallaModificarLibro = new PantallaModificarLibro(libro -> {
+            libros.add(libro);
+        });
+        try {
+            pantallaModificarLibro.show();
+        } catch(Exception e) {
+            e.printStackTrace();
+            System.out.println("Error al abrir la pantalla de modificar libro");
         }
     }
 
@@ -181,7 +193,7 @@ public class BibliotecaController {
                 libros.remove(libroSeleccionado);
                 cargarLibrosDesdeApi(); // Actualizar la tabla después de eliminar un libro
             } else {
-                showAlert(messages.get("alert.error"), "No se pudo eliminar el libro");
+                showAlert(messages.get("alert.error"), messages.get("alerto.libro.noeliminado"));
             }
         } else {
             showAlert(messages.get("alert.error"), messages.get("alert.no.seleccionado"));
