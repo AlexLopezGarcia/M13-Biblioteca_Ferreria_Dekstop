@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 public class CrearLibroController {
 
+    @FXML private TextField txtId;
     @FXML private TextField txtISBN;
     @FXML private TextField txtTitulo;
     @FXML private TextField txtAutor;
@@ -90,6 +91,7 @@ public class CrearLibroController {
             return;
         }
 
+        long id = txtId.getText().isEmpty() ? 0 : Long.parseLong(txtId.getText());
         String titulo = txtTitulo.getText();
         String autor = txtAutor.getText();
         String editorial = txtEditorial.getText();
@@ -118,13 +120,13 @@ public class CrearLibroController {
             return;
         }
 
-        LibroDTO libroDTO = new LibroDTO(isbn, titulo, autor, categoria, estado);
+        LibroDTO libroDTO = new LibroDTO(id, isbn, titulo, autor, categoria, estado);
         String response = apiClient.createLibro(libroDTO);
 
         if (response != null) {
             showAlert(messages.get("alert.exito"), messages.get("alert.libro.anyadido"));
             if(onLibroCreado != null) {
-                Libro libro = new Libro(isbn, titulo, autor, categoria, estado);
+                Libro libro = new Libro(id, isbn, titulo, autor, categoria, estado);
                 onLibroCreado.accept(libro);
             }
             Stage stage = (Stage) btnGuardar.getScene().getWindow();
