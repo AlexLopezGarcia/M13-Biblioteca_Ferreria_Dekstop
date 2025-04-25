@@ -12,16 +12,15 @@
       fx:controller="cat.ferreria.dekstop.controller.SesionController">
 
     <children>
-        <Label layoutX="124.0" layoutY="149.0" text="Correo Electrónico:" />
-        <Label layoutX="231.0" layoutY="39.0" text="Iniciar Sesión">
+        <Label fx:id="labelCorreo" layoutX="124.0" layoutY="149.0" text="Correo Electrónico:" />
+        <Label fx:id="labelIniciarSesion" layoutX="231.0" layoutY="39.0" text="Iniciar Sesión">
             <font>
                 <Font size="24.0" />
             </font>
         </Label>
 
-        <!-- Añadir fx:id -->
         <TextField fx:id="correoTextField" layoutX="231.0" layoutY="145.0" prefHeight="25.0" prefWidth="205.0" />
-        <Label layoutX="161.0" layoutY="200.0" text="Contraseña:" />
+        <Label fx:id="labelContrasena" layoutX="161.0" layoutY="200.0" text="Contraseña:" />
         <PasswordField fx:id="contrasenaTextField" layoutX="231.0" layoutY="196.0" prefHeight="25.0" prefWidth="205.0" />
 
         <!-- Añadir fx:id y acción -->

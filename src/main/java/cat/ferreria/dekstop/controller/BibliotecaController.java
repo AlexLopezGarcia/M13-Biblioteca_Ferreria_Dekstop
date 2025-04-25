@@ -261,7 +261,8 @@ public class BibliotecaController {
             Parent root = loader.load();
 
             SesionController controller = loader.getController();
-            controller.setBibliotecaController(this); // <- pasamos la referencia
+            controller.setBibliotecaController(this);
+            controller.setMessages(messages);
 
             Stage stage = new Stage();
             stage.setTitle("Iniciar Sesión");
