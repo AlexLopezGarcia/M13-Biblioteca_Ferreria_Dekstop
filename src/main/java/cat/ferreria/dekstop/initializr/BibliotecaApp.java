@@ -69,6 +69,7 @@ public class BibliotecaApp extends Application {
         } catch (Exception e) {
             System.err.println("Error al cargar mensajes locales: " + e.getMessage());
             return Map.ofEntries(
+                    Map.entry("libro.id", "ID"),
                     Map.entry("libro.isbn", "ISBN"),
                     Map.entry("libro.titulo", "Título"),
                     Map.entry("libro.autor", "Autor"),
