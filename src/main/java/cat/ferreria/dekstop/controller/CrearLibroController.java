@@ -67,14 +67,14 @@ public class CrearLibroController {
         isbnLabel.setText(messages.get("libro.isbn"));
         tituloLabel.setText(messages.get("libro.titulo"));
         autorLabel.setText(messages.get("libro.autor"));
-        editorialLabel.setText("Editorial"); // No tienes una clave para esto, puedes añadirla si lo deseas
+        editorialLabel.setText(messages.get("libro.editorial"));
         categoriaLabel.setText(messages.get("libro.categoria"));
-        cantidadLabel.setText("Cantidad"); // No tienes una clave para esto, puedes añadirla si lo deseas
+        cantidadLabel.setText(messages.get("libro.cantidad"));
         estadoLabel.setText(messages.get("libro.estado"));
     }
 
     private void guardarLibro() {
-        String isbn = this.txtISBN.getText();
+        String isbn = txtISBN.getText().trim();
         if (isbn.isEmpty()) {
             showAlert(messages.get("alert.error"), messages.get("alert.completa.campos"));
             return;
@@ -86,10 +86,10 @@ public class CrearLibroController {
             return;
         }
 
-        String titulo = txtTitulo.getText();
-        String autor = txtAutor.getText();
-        String editorial = txtEditorial.getText();
-        String categoria = txtCategoria.getText();
+        String titulo = txtTitulo.getText().trim();
+        String autor = txtAutor.getText().trim();
+        String editorial = txtEditorial.getText().trim();
+        String categoria = txtCategoria.getText().trim();
         String estado = cmbEstadoUso.getSelectionModel().getSelectedItem();
 
         if (txtCantidad.getText().isEmpty()) {
@@ -118,7 +118,7 @@ public class CrearLibroController {
         String response = apiClient.createLibro(libroDTO);
 
         if (response != null && !response.startsWith("Error")) {
-            showAlert(messages.get("alert.exito"), "El libro ha sido añadido correctamente");
+            showAlert(messages.get("alert.success"), "El libro ha sido añadido correctamente");
             if (onLibroCreado != null) {
                 Libro libro = new Libro(isbn, titulo, autor, categoria, estado);
                 onLibroCreado.accept(libro);
