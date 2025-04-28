@@ -3,7 +3,7 @@ package cat.ferreria.dekstop.controller;
 import cat.ferreria.dekstop.dataaccess.ApiClient;
 import cat.ferreria.dekstop.model.clazz.Libro;
 import cat.ferreria.dekstop.model.dtos.LibroDTO;
-import cat.ferreria.dekstop.vistas.PantallaCrearLibro;
+import cat.ferreria.dekstop.vistas.*;
 import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -99,6 +99,7 @@ public class BibliotecaController {
         cargarLibrosDesdeApi();
 
         btnAnyadir.setOnAction(event -> openPantallaCrearLibro());
+        btnModificar.setOnAction(event -> openPantallaModificarLibro());
         buscarButton.setOnAction(event -> buscarLibros());
         btnEliminar.setOnAction(event -> eliminarLibro());
         btnRecargar.setOnAction(event -> recargarLibros());
@@ -216,6 +217,22 @@ public class BibliotecaController {
         } catch (Exception e) {
             _log.error("Error al abrir pantalla de crear libro: {}", e.getMessage(), e);
             showAlert(messages.get("alert.error"), "Error al abrir la pantalla de crear libro");
+        } catch(Exception e) {
+            e.printStackTrace();
+            System.out.println("Error al abrir la pantalla de crear libro");
+            showAlert(messages.get("alert.error"), messages.get("alert.abrir.pantalla.libro"));
+        }
+    }
+
+    private void openPantallaModificarLibro() {
+        PantallaModificarLibro pantallaModificarLibro = new PantallaModificarLibro(libro -> {
+            libros.add(libro);
+        });
+        try {
+            pantallaModificarLibro.show();
+        } catch(Exception e) {
+            e.printStackTrace();
+            System.out.println("Error al abrir la pantalla de modificar libro");
         }
     }
 
@@ -230,6 +247,7 @@ public class BibliotecaController {
             } else {
                 _log.error("No se pudo eliminar el libro con ISBN: {}", libroSeleccionado.getIsbn());
                 showAlert(messages.get("alert.error"), "No se pudo eliminar el libro");
+                showAlert(messages.get("alert.error"), messages.get("alerto.libro.noeliminado"));
             }
         } else {
             _log.warn("No se seleccionó ningún libro para eliminar");

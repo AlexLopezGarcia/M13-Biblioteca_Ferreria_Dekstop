@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 public class CrearLibroController {
 
+    @FXML private TextField txtId;
     @FXML private TextField txtISBN;
     @FXML private TextField txtTitulo;
     @FXML private TextField txtAutor;
