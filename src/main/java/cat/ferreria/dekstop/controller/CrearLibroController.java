@@ -43,7 +43,7 @@ public class CrearLibroController {
 
     @FXML
     public void initialize() {
-        cmbEstadoUso.getItems().addAll("Nuevo", "Usado", "Deteriorado");
+        cmbEstadoUso.getItems().addAll("Disponible", "Prestado");
         btnGuardar.setOnAction(event -> guardarLibro());
 
         txtCantidad.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -82,11 +82,12 @@ public class CrearLibroController {
         }
 
         String existLibro = apiClient.fetchLibroByIsbn(isbn);
-        if (existLibro != null) {
+        if (existLibro != null && !existLibro.isEmpty()) {
             showAlert(messages.get("alert.error"), String.format(messages.get("alert.isbn.existe"), isbn));
             return;
         }
 
+        Long libroId = txtId.getText().isEmpty() ? null : Long.parseLong(txtId.getText());
         String titulo = txtTitulo.getText().trim();
         String autor = txtAutor.getText().trim();
         String editorial = txtEditorial.getText().trim();
@@ -115,13 +116,20 @@ public class CrearLibroController {
             return;
         }
 
-        LibroDTO libroDTO = new LibroDTO(isbn, titulo, autor, categoria, estado);
+        LibroDTO libroDTO = new LibroDTO();
+        libroDTO.setLibroId(libroId);
+        libroDTO.setIsbn(isbn);
+        libroDTO.setTitulo(titulo);
+        libroDTO.setAutor(autor);
+        libroDTO.setCategoria(categoria);
+        libroDTO.setEstado(estado);
+
         String response = apiClient.createLibro(libroDTO);
 
         if (response != null && !response.startsWith("Error")) {
-            showAlert(messages.get("alert.success"), "El libro ha sido añadido correctamente");
+            showAlert(messages.get("alert.exito"), "El libro ha sido añadido correctamente");
             if (onLibroCreado != null) {
-                Libro libro = new Libro(isbn, titulo, autor, categoria, estado);
+                Libro libro = new Libro(libroId, isbn, titulo, autor, categoria, estado);
                 onLibroCreado.accept(libro);
             }
             Stage stage = (Stage) btnGuardar.getScene().getWindow();

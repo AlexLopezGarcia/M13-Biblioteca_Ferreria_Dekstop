@@ -118,6 +118,31 @@ public class ApiClient {
         }
     }
 
+    public String updateLibro(LibroDTO libroDTO) {
+        String apiUrl = "/public/libros/" + libroDTO.getIsbn();
+        try {
+            URL url = new URL(BASE_URL + apiUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("PUT");
+            conn.setRequestProperty("Content-Type", "application/json");
+
+            String jsonInput = new Gson().toJson(libroDTO);
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(jsonInput.getBytes(StandardCharsets.UTF_8));
+            }
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                return "Error: " + responseCode + " - " + readResponse(conn);
+            }
+            return readResponse(conn);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error al conectar con la API: " + e.getMessage();
+        }
+    }
+
     public String fetchAllLibros() {
         return fetchData("/public/libros").join();
     }

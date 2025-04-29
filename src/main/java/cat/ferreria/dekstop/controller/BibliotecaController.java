@@ -143,6 +143,7 @@ public class BibliotecaController {
                 for (LibroDTO libroDTO : librosArray) {
                     if (libroDTO != null && libroDTO.getIsbn() != null) {
                         Libro libro = new Libro(
+                                libroDTO.getLibroId(),
                                 libroDTO.getIsbn(),
                                 libroDTO.getTitulo(),
                                 libroDTO.getAutor(),
@@ -177,6 +178,7 @@ public class BibliotecaController {
                     LibroDTO libroDTO = gson.fromJson(jsonLibro, LibroDTO.class);
                     if (libroDTO != null && libroDTO.getIsbn() != null) {
                         Libro libro = new Libro(
+                                libroDTO.getLibroId(),
                                 libroDTO.getIsbn(),
                                 libroDTO.getTitulo(),
                                 libroDTO.getAutor(),
@@ -217,22 +219,23 @@ public class BibliotecaController {
         } catch (Exception e) {
             _log.error("Error al abrir pantalla de crear libro: {}", e.getMessage(), e);
             showAlert(messages.get("alert.error"), "Error al abrir la pantalla de crear libro");
-        } catch(Exception e) {
-            e.printStackTrace();
-            System.out.println("Error al abrir la pantalla de crear libro");
-            showAlert(messages.get("alert.error"), messages.get("alert.abrir.pantalla.libro"));
         }
     }
 
     private void openPantallaModificarLibro() {
+        Libro libroSeleccionado = tablaLibros.getSelectionModel().getSelectedItem();
+        if (libroSeleccionado == null) {
+            showAlert(messages.get("alert.error"), messages.get("alert.no.seleccionado"));
+            return;
+        }
         PantallaModificarLibro pantallaModificarLibro = new PantallaModificarLibro(libro -> {
-            libros.add(libro);
-        });
+            cargarLibrosDesdeApi();
+        }, libroSeleccionado, messages);
         try {
             pantallaModificarLibro.show();
-        } catch(Exception e) {
-            e.printStackTrace();
-            System.out.println("Error al abrir la pantalla de modificar libro");
+        } catch (Exception e) {
+            _log.error("Error al abrir pantalla de modificar libro: {}", e.getMessage(), e);
+            showAlert(messages.get("alert.error"), "Error al abrir la pantalla de modificar libro");
         }
     }
 
@@ -247,7 +250,6 @@ public class BibliotecaController {
             } else {
                 _log.error("No se pudo eliminar el libro con ISBN: {}", libroSeleccionado.getIsbn());
                 showAlert(messages.get("alert.error"), "No se pudo eliminar el libro");
-                showAlert(messages.get("alert.error"), messages.get("alerto.libro.noeliminado"));
             }
         } else {
             _log.warn("No se seleccionó ningún libro para eliminar");
