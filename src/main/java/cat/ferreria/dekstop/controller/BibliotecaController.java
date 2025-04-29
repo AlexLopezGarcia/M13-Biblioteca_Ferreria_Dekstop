@@ -290,18 +290,20 @@ public class BibliotecaController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/sesion.fxml"));
             Parent root = loader.load();
 
-            SesionController controller = loader.getController();
-            controller.setBibliotecaController(this);
-            controller.setMessages(messages);
+            SesionController sesionController = loader.getController();
+            sesionController.setMessages(messages); // importante: después de load()
+            sesionController.setBibliotecaController(this);
 
             Stage stage = new Stage();
             stage.setTitle("Iniciar Sesión");
-            stage.setScene(new Scene(root, 600, 400));
+            stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            showAlert("Error", "No se pudo abrir el panel de sesión.");
         }
     }
+
     public void mostrarBotonesUsuario() {
         btnRegistrarUsuario.setVisible(true);
         btnModificarUsuario.setVisible(true);
