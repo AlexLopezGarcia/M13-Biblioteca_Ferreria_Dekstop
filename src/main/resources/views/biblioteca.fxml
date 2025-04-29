@@ -22,6 +22,8 @@
     <center>
         <VBox spacing="10">
             <GridPane hgap="10" vgap="10">
+                <TextField fx:id="idField" visible="false" />
+
                 <Label fx:id="isbnLabel" GridPane.columnIndex="0" GridPane.rowIndex="0" />
                 <TextField fx:id="isbnField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
@@ -58,6 +60,7 @@
 
             <TableView fx:id="tablaLibros" style="-fx-font-size: 14px;">
                 <columns>
+                    <TableColumn visible="false" fx:id="colLibroId" />
                     <TableColumn fx:id="colISBN" />
                     <TableColumn fx:id="colTitulo" />
                     <TableColumn fx:id="colAutor" />

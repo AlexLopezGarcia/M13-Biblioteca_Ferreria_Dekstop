@@ -1,7 +1,6 @@
 package cat.ferreria.dekstop.controller;
 
 import cat.ferreria.dekstop.dataaccess.ApiClient;
-import cat.ferreria.dekstop.model.dtos.HistorialDTO;
 import cat.ferreria.dekstop.model.clazz.Libro;
 import cat.ferreria.dekstop.model.dtos.LibroDTO;
 import cat.ferreria.dekstop.vistas.*;
@@ -11,7 +10,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class BibliotecaController {
@@ -36,6 +38,7 @@ public class BibliotecaController {
     @FXML private Label categoriaLabel;
 
     @FXML private TableView<Libro> tablaLibros;
+    @FXML private TableColumn<Libro, Long> colLibroId;
     @FXML private TableColumn<Libro, String> colISBN;
     @FXML private TableColumn<Libro, String> colTitulo;
     @FXML private TableColumn<Libro, String> colAutor;
@@ -64,6 +67,7 @@ public class BibliotecaController {
         ));
 
         // Configurar las columnas de la tabla
+        colLibroId.setCellValueFactory(data -> data.getValue().libro_idProperty().asObject());
         colISBN.setCellValueFactory(data -> data.getValue().isbnProperty());
         colTitulo.setCellValueFactory(data -> data.getValue().tituloProperty());
         colAutor.setCellValueFactory(data -> data.getValue().autorProperty());
@@ -87,6 +91,16 @@ public class BibliotecaController {
                 showAlert(messages.get("alert.error"), messages.get("alert.error.idioma"));
             }
         });
+
+        // Asegurarse de que messages se inicialice al cargar
+        if (messages == null) {
+            try {
+                messages = messageFetcher.apply("es"); // Cargar idioma predeterminado
+                updateUI();
+            } catch (Exception e) {
+                showAlert("Error", "No se pudo cargar el idioma predeterminado.");
+            }
+        }
 
         // Configurar acciones de los botones
         btnAnyadir.setOnAction(event -> openPantallaCrearLibro());
@@ -117,6 +131,7 @@ public class BibliotecaController {
         btnRecargar.setText(messages.get("button.recargar.lista"));
 
         // Actualizar columnas de la tabla
+        colLibroId.setText(messages.get("libro.id"));
         colISBN.setText(messages.get("libro.isbn"));
         colTitulo.setText(messages.get("libro.titulo"));
         colAutor.setText(messages.get("libro.autor"));
@@ -125,30 +140,37 @@ public class BibliotecaController {
     }
 
     private void cargarLibrosDesdeApi() {
-        System.out.println("Cargando libros desde la API...");
-        String jsonLibros = apiClient.fetchAllLibros();
-        if (jsonLibros != null) {
-            System.out.println("Libros recibidos: " + jsonLibros);
-            Gson gson = new Gson();
-            LibroDTO[] librosArray = gson.fromJson(jsonLibros, LibroDTO[].class);
-            libros.clear();
-            for (LibroDTO libroDTO : librosArray) {
-                if (libroDTO != null && libroDTO.getIsbn() != null) {
-                    Libro libro = new Libro(
-                            libroDTO.getIsbn(),
-                            libroDTO.getTitulo(),
-                            libroDTO.getAutor(),
-                            libroDTO.getCategoria(),
-                            libroDTO.getEstado()
-                    );
-                    libros.add(libro);
-                } else {
-                    System.out.println("LibroDTO nulo o sin ISBN: " + libroDTO);
+        try {
+            System.out.println("Cargando libros desde la API...");
+            String jsonLibros = apiClient.fetchAllLibros();
+            if (jsonLibros != null) {
+                System.out.println("Libros recibidos: " + jsonLibros);
+                Gson gson = new Gson();
+                LibroDTO[] librosArray = gson.fromJson(jsonLibros, LibroDTO[].class);
+                List<Libro> nuevosLibros = new ArrayList<>();
+                for (LibroDTO libroDTO : librosArray) {
+                    if (libroDTO != null && libroDTO.getIsbn() != null) {
+                        Libro libro = new Libro(
+                                libroDTO.getLibro_id(),
+                                libroDTO.getIsbn(),
+                                libroDTO.getTitulo(),
+                                libroDTO.getAutor(),
+                                libroDTO.getCategoria(),
+                                libroDTO.getEstado()
+                        );
+                        nuevosLibros.add(libro);
+                    } else {
+                        System.out.println("LibroDTO nulo o sin ISBN: " + libroDTO);
+                    }
                 }
+                libros.setAll(nuevosLibros);
+            } else {
+                System.err.println("Error al obtener los libros de la API");
             }
-        } else {
-            System.out.println("Error al obtener los libros de la API");
-       }
+        } catch (Exception e) {
+            System.err.println("Error al cargar libros: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void buscarLibros() {
@@ -187,16 +209,44 @@ public class BibliotecaController {
 
     private void eliminarLibro() {
         Libro libroSeleccionado = tablaLibros.getSelectionModel().getSelectedItem();
-        if (libroSeleccionado != null) {
-            boolean eliminado = apiClient.eliminarLibroPorIsbn(libroSeleccionado.getIsbn());
+
+        if (libroSeleccionado == null) {
+            showAlert(messages.get("alert.error"), messages.get("alert.seleccionar.libro"));
+            return;
+        }
+
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle(messages.get("alert.confirmacion"));
+        confirmacion.setHeaderText(messages.get("alert.confirmar.eliminar"));
+        confirmacion.setContentText(messages.get("alert.libro.seleccionado") + " " + libroSeleccionado.getTitulo());
+
+        // Mostrar el diálogo y esperar la respuesta del usuario
+        Optional<ButtonType> resultado = confirmacion.showAndWait();
+
+        // Proceder solo si el usuario confirma (OK)
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            long id = libroSeleccionado.getLibro_id();
+
+            if (id == 0) {
+                showAlert(messages.get("alert.error"), messages.get("alert.id.invalido"));
+                return;
+            }
+
+            // Intentar eliminar el libro
+            boolean eliminado = apiClient.eliminarLibroPorId(id);
             if (eliminado) {
                 libros.remove(libroSeleccionado);
-                cargarLibrosDesdeApi(); // Actualizar la tabla después de eliminar un libro
+                cargarLibrosDesdeApi(); // Actualizar la tabla
+                showAlert(messages.get("alert.exito"), messages.get("alert.libro.eliminado"));
             } else {
-                showAlert(messages.get("alert.error"), messages.get("alerto.libro.noeliminado"));
+                // Mostrar un mensaje más específico para el error de clave foránea
+                showAlert(messages.get("alert.error"),
+                        messages.getOrDefault("alert.libro.noeliminado.historial",
+                                "No se puede eliminar el libro porque está asociado a registros en el historial."));
             }
         } else {
-            showAlert(messages.get("alert.error"), messages.get("alert.no.seleccionado"));
+            // El usuario canceló la eliminación
+            System.out.println("Eliminación cancelada por el usuario.");
         }
     }
 

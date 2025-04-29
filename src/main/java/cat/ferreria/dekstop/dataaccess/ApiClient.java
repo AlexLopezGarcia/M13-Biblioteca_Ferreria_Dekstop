@@ -91,19 +91,27 @@ public class ApiClient {
         return fetchData("http://localhost:9090/libros/" + isbn).join();
     }
 
-    public boolean eliminarLibroPorIsbn(String isbn) {
-        if (isbn == null || isbn.trim().isEmpty()) {
-            System.err.println("ISBN nulo o vacío, no se puede eliminar el libro");
+    public boolean eliminarLibroPorId(long libro_id) {
+        if (libro_id == 0) {
+            System.err.println("ID nulo o vacío, no se puede eliminar el libro");
             return false;
         }
         try {
-            URL url = new URL("http://localhost:9090/libros/" + isbn);
+            System.out.println("Intentando eliminar libro con ID: " + libro_id);
+            URL url = new URL("http://localhost:9090/libros/" + libro_id);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("DELETE");
             int responseCode = conn.getResponseCode();
-            return responseCode >= 200 && responseCode < 300;
+            if (responseCode >= 200 && responseCode < 300) {
+                System.out.println("Libro con ID " + libro_id + " eliminado correctamente");
+                return true;
+            } else {
+                System.err.println("Error al eliminar el libro con ID " + libro_id + ": Código de respuesta " + responseCode);
+                return false;
+            }
         } catch (Exception e) {
-            System.err.println("Error al eliminar el libro con ISBN " + isbn + ": " + e.getMessage());
+            System.err.println("Error al eliminar el libro con ID " + libro_id + ": " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
