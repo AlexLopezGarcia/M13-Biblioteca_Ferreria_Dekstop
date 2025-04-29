@@ -192,8 +192,8 @@ public class ModificarUsuarioController {
             return null;
         });
 
-        dialog.showAndWait().ifPresent(usuarioDTO -> {
-            boolean modificado = apiClient.modificarUsuarioEnAPI(usuario.getDni(), usuarioDTO);
+        dialog.showAndWait().ifPresent(Usuario -> {
+            boolean modificado = apiClient.modificarUsuarioEnAPI(usuario);
             if (modificado) {
                 mostrarAlerta(Alert.AlertType.WARNING,
                         messages.get("alert.seleccion.unica.titulo"),

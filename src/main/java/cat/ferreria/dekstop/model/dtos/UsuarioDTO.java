@@ -18,4 +18,3 @@ public class UsuarioDTO {
     public String getContrasena() { return contrasena; }
     public String getCorreoElectronico() { return correoElectronico; }
 }
-

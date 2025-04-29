@@ -7,7 +7,8 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.controller.RegistrarUsuarioController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
+      xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.controller.RegistrarUsuarioController">
 
     <children>
         <Label fx:id="labelDni" layoutX="162.0" layoutY="100.0" prefHeight="17.0" prefWidth="37.0" text="DNI:" />
@@ -16,11 +17,12 @@
         <TextField fx:id="nombreField" layoutX="198.0" layoutY="152.0" prefHeight="25.0" prefWidth="217.0" />
         <TextField fx:id="correoField" layoutX="198.0" layoutY="211.0" prefHeight="25.0" prefWidth="217.0" />
 
-        <Label fx:id="labelNombre" layoutX="133.0" layoutY="156.0" prefHeight="17.0" prefWidth="66.0" text="Nombre" />
+        <Label fx:id="labelNombre" layoutX="133.0" layoutY="156.0" prefHeight="17.0" prefWidth="66.0" text="Nombre"/>
         <Label fx:id="labelCorreo" layoutX="90.0" layoutY="215.0" prefHeight="17.0" prefWidth="109.0" text="Correo Electrónico:" />
         <Label fx:id="labelContrasena" layoutX="126.0" layoutY="273.0" prefHeight="17.0" prefWidth="72.0" text="Contraseña" />
 
-        <Button fx:id="registrarButton" layoutX="108.0" layoutY="331.0" mnemonicParsing="false" onAction="#registrarUsuario" prefHeight="25.0" prefWidth="384.0" text="Registrar Usuario" textFill="white">
+        <Button fx:id="registrarButton" layoutX="108.0" layoutY="331.0" mnemonicParsing="false" prefHeight="25.0"
+                prefWidth="384.0" text="Registrar Usuario" textFill="white" onAction="#registrarUsuario">
             <style>
                 -fx-background-color: #2e7d32;
                 -fx-font-weight: bold;
@@ -30,10 +32,12 @@
             </style>
         </Button>
 
-        <Label fx:id="labelFormulario" layoutX="198.0" layoutY="33.0" prefHeight="35.0" prefWidth="315.0" text="Formulario Registro">
+        <Label fx:id="labelFormulario" layoutX="198.0" layoutY="33.0" prefHeight="17.0" prefWidth="239.0" text="Formulario Registro">
             <font>
                 <Font size="24.0" />
             </font>
         </Label>
     </children>
 </Pane>
+
+

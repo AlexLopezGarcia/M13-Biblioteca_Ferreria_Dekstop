@@ -8,11 +8,19 @@ import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -33,7 +41,8 @@ public class BibliotecaController {
     @FXML private Button btnRegistrarPrestamo;
     @FXML private Button btnLogarse;
     @FXML private Button btnRegistrarUsuario;
-    @FXML private ComboBox<String> languageSelector;
+    @FXML private Button btnModificarUsuario;
+    @FXML private ComboBox<Idioma> languageSelector;
     @FXML private Label isbnLabel;
     @FXML private Label tituloLabel;
     @FXML private Label autorLabel;
@@ -77,33 +86,67 @@ public class BibliotecaController {
 
         tablaLibros.setItems(libros);
 
-        languageSelector.setItems(FXCollections.observableArrayList("es", "ca"));
-        languageSelector.setValue("es");
-        languageSelector.setOnAction(event -> {
-            String selectedLang = languageSelector.getValue();
-            try {
-                messages = messageFetcher.apply(selectedLang);
-                updateUI();
-            } catch (Exception e) {
-                showAlert(messages != null ? messages.get("alert.error") : "Error", "No se pudo cambiar el idioma");
-            }
-        });
-
-        try {
-            messages = apiClient.fetchTranslations("es");
-            updateUI();
-        } catch (Exception e) {
-            System.err.println("Error al cargar mensajes iniciales: " + e.getMessage());
-        }
+        configurarComboBoxIdiomas();
 
         cargarLibrosDesdeApi();
 
+        btnRegistrarUsuario.setVisible(false);
+        btnModificarUsuario.setVisible(false);
         btnAnyadir.setOnAction(event -> openPantallaCrearLibro());
-        btnModificar.setOnAction(event -> openPantallaModificarLibro());
+        btnModificar.setOnAction(event -> abrirModificarUsuario());
         buscarButton.setOnAction(event -> buscarLibros());
         btnEliminar.setOnAction(event -> eliminarLibro());
         btnRecargar.setOnAction(event -> recargarLibros());
-        btnLogarse.setOnAction(event -> mostrarPantallaLogin());
+        btnLogarse.setOnAction(event -> abrirPanelSesion());
+    }
+
+    private void configurarComboBoxIdiomas() {
+        Idioma cat = new Idioma("ca", "Català", new Image(getClass().getResource("/img/catalunya.png").toExternalForm()));
+        Idioma esp = new Idioma("es", "Español", new Image(getClass().getResource("/img/espana.png").toExternalForm()));
+
+        languageSelector.setItems(FXCollections.observableArrayList(cat, esp));
+        languageSelector.getSelectionModel().select(esp); // Español por defecto
+
+        // Mostrar icono y nombre
+        languageSelector.setCellFactory(new Callback<>() {
+            @Override
+            public ListCell<Idioma> call(ListView<Idioma> param) {
+                return new ListCell<>() {
+                    private final ImageView imageView = new ImageView();
+
+                    @Override
+                    protected void updateItem(Idioma item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                            setGraphic(null);
+                        } else {
+                            imageView.setImage(item.getIcono());
+                            imageView.setFitWidth(24);
+                            imageView.setFitHeight(16);
+                            setText(item.getNombre());
+                            setGraphic(imageView);
+                        }
+                    }
+                };
+            }
+        });
+
+        // Mostrar icono también en el botón cerrado
+        languageSelector.setButtonCell(languageSelector.getCellFactory().call(null));
+
+        // Cambiar idioma cuando se selecciona uno nuevo
+        languageSelector.setOnAction(event -> {
+            Idioma idiomaSeleccionado = languageSelector.getValue();
+            if (idiomaSeleccionado != null) {
+                try {
+                    messages = messageFetcher.apply(idiomaSeleccionado.getCodigo());
+                    updateUI();
+                } catch (Exception e) {
+                    showAlert("Error", "No se pudo cambiar el idioma.");
+                }
+            }
+        });
     }
 
     private void updateUI() {
@@ -221,21 +264,64 @@ public class BibliotecaController {
             showAlert(messages.get("alert.error"), "Error al abrir la pantalla de crear libro");
         }
     }
-
-    private void openPantallaModificarLibro() {
-        Libro libroSeleccionado = tablaLibros.getSelectionModel().getSelectedItem();
-        if (libroSeleccionado == null) {
-            showAlert(messages.get("alert.error"), messages.get("alert.no.seleccionado"));
-            return;
-        }
-        PantallaModificarLibro pantallaModificarLibro = new PantallaModificarLibro(libro -> {
-            cargarLibrosDesdeApi();
-        }, libroSeleccionado, messages);
+    @FXML
+    private void abrirRegistroUsuario() {
         try {
-            pantallaModificarLibro.show();
-        } catch (Exception e) {
-            _log.error("Error al abrir pantalla de modificar libro: {}", e.getMessage(), e);
-            showAlert(messages.get("alert.error"), "Error al abrir la pantalla de modificar libro");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/registrarUsuario.fxml"));
+            Parent root = loader.load();
+
+            // Obtener el controlador para pasarle los mensajes
+            RegistrarUsuarioController controller = loader.getController();
+            controller.setMessages(messages); // <--- Esta línea es clave
+
+            Stage stage = new Stage();
+            stage.setTitle(messages.getOrDefault("form.registro", "Registro de Usuario")); // título traducido
+            stage.setScene(new Scene(root, 600, 400));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error", "No se pudo abrir la pantalla para registrar usuario.");
+        }
+    }
+
+    @FXML
+    private void abrirPanelSesion() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/sesion.fxml"));
+            Parent root = loader.load();
+
+            SesionController controller = loader.getController();
+            controller.setBibliotecaController(this);
+            controller.setMessages(messages);
+
+            Stage stage = new Stage();
+            stage.setTitle("Iniciar Sesión");
+            stage.setScene(new Scene(root, 600, 400));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void mostrarBotonesUsuario() {
+        btnRegistrarUsuario.setVisible(true);
+        btnModificarUsuario.setVisible(true);
+    }
+
+    @FXML
+    private void abrirModificarUsuario() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/modificarUsuario.fxml"));
+            Parent root = loader.load();
+
+            ModificarUsuarioController controller = loader.getController();
+            controller.setMessages(messages);  // ¡Aquí se pasa el idioma actual!
+
+            Stage stage = new Stage();
+            stage.setTitle("Modificar Usuario");
+            stage.setScene(new Scene(root, 600, 400));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -330,5 +416,27 @@ public class BibliotecaController {
         alert.setTitle(title);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+    public static class Idioma {
+        private final String codigo;
+        private final String nombre;
+        private final Image icono;
+
+        public Idioma(String codigo, String nombre, Image icono) {
+            this.codigo = codigo;
+            this.nombre = nombre;
+            this.icono = icono;
+        }
+
+        public String getCodigo() { return codigo; }
+
+        public String getNombre() { return nombre; }
+
+        public Image getIcono() { return icono; }
+
+        @Override
+        public String toString() {
+            return nombre;
+        }
     }
 }
