@@ -4,6 +4,7 @@ import cat.ferreria.dekstop.dataaccess.ApiClient;
 import cat.ferreria.dekstop.model.clazz.Libro;
 import cat.ferreria.dekstop.model.dtos.LibroDTO;
 import cat.ferreria.dekstop.vistas.*;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -47,6 +48,7 @@ public class BibliotecaController {
     @FXML private Label tituloLabel;
     @FXML private Label autorLabel;
     @FXML private Label categoriaLabel;
+    private final Gson gson = new Gson();
 
     @FXML private TableView<Libro> tablaLibros;
     @FXML private TableColumn<Libro, String> colISBN;
@@ -89,6 +91,7 @@ public class BibliotecaController {
         configurarComboBoxIdiomas();
 
         cargarLibrosDesdeApi();
+        updateUI();
 
         btnRegistrarUsuario.setVisible(false);
         btnModificarUsuario.setVisible(false);
