@@ -20,6 +20,7 @@ import java.util.function.Function;
 public class BibliotecaController {
     private static final Logger _log = LoggerFactory.getLogger(BibliotecaController.class);
 
+    @FXML TextField idField;
     @FXML private TextField isbnField;
     @FXML private TextField tituloField;
     @FXML private TextField autorField;
@@ -228,9 +229,7 @@ public class BibliotecaController {
             showAlert(messages.get("alert.error"), messages.get("alert.no.seleccionado"));
             return;
         }
-        PantallaModificarLibro pantallaModificarLibro = new PantallaModificarLibro(libro -> {
-            cargarLibrosDesdeApi();
-        }, libroSeleccionado, messages);
+        PantallaModificarLibro pantallaModificarLibro = new PantallaModificarLibro(libro -> cargarLibrosDesdeApi(), libroSeleccionado, messages);
         try {
             pantallaModificarLibro.show();
         } catch (Exception e) {

@@ -65,7 +65,7 @@ public class ApiClient {
                 return null;
             }
         } catch (Exception e) {
-            System.err.println("Error al obtener traducciones: " + e.getMessage());
+            System.err.println("Error al obtener traducciones: " + e.getLocalizedMessage());
             return null;
         }
     }
