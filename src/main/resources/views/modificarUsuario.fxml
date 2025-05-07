@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.ferreria.dekstop.controller.ModificarUsuarioController">
+    <top>
+        <HBox spacing="10" style="-fx-background-color: #558C01; -fx-padding: 10px;">
+            <Pane HBox.hgrow="ALWAYS" />
+            <Button fx:id="btnEditarUsuario" text="Editar Usuario"/>
+            <Button fx:id="btnEliminarUsuario" text="Eliminar Usuario" />
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="10">
+            <GridPane hgap="10" vgap="10">
+                <Label fx:id="LabelDni" text="DNI:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="dniField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label fx:id="LabelNombre" text="Nombre:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="nombreField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label fx:id="LabelCorreo" text="Correo:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="correoField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+
+                <Label text="" GridPane.rowIndex="3" GridPane.columnIndex="0"/> <!-- vacía para alinear -->
+                <HBox spacing="10" alignment="CENTER_LEFT" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                    <Button fx:id="buscarButton" text="Buscar"/>
+                    <CheckBox fx:id="seleccionarTodosCheckBox" text="Seleccionar todos"/>
+                </HBox>
+
+                <columnConstraints>
+                    <ColumnConstraints />
+                    <ColumnConstraints />
+                    <ColumnConstraints />
+                    <ColumnConstraints />
+                    <ColumnConstraints />
+                    <ColumnConstraints />
+                    <ColumnConstraints />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints />
+                    <RowConstraints />
+                </rowConstraints>
+                <VBox.margin>
+                    <Insets left="10.0" top="10.0" />
+                </VBox.margin>
+            </GridPane>
+
+            <TableView fx:id="tablaUsuarios" style="-fx-font-size: 14px;">
+                <columns>
+                    <TableColumn fx:id="colDni" text="DNI"/>
+                    <TableColumn fx:id="colNombre" text="Nombre"/>
+                    <TableColumn fx:id="colCorreo" text="Correo"/>
+                </columns>
+                <VBox.margin>
+                    <Insets bottom="20.0" left="20.0" right="20.0" />
+                </VBox.margin>
+            </TableView>
+
+        </VBox>
+    </center>
+</BorderPane>

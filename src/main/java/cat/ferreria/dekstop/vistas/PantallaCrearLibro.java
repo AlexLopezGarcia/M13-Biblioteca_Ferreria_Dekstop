@@ -1,7 +1,9 @@
 package cat.ferreria.dekstop.vistas;
 
 import cat.ferreria.dekstop.controller.CrearLibroController;
+import cat.ferreria.dekstop.controller.SesionController;
 import cat.ferreria.dekstop.model.clazz.Libro;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -19,6 +21,7 @@ public class PantallaCrearLibro {
         this.messages = messages;
     }
 
+    @FXML
     public void show() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/crearLibro.fxml"));
@@ -33,7 +36,9 @@ public class PantallaCrearLibro {
             Stage stage = new Stage();
             stage.setTitle(messages.get("app.title")); // Usar el título traducido
             stage.setScene(new Scene(root));
+            stage.setScene(new Scene(root, 600, 400));
             stage.show();
+
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
