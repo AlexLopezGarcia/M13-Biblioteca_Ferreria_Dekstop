@@ -10,19 +10,9 @@ public class LibroDTO {
     private String autor;
     private String categoria;
     @SerializedName("estadoUso")
-    private Boolean estadoUso;
+    private boolean estadoUso;
 
-    public LibroDTO() {}
-
-    public LibroDTO(Long libroId, String isbn, String titulo, String autor, String categoria, String estado) {
-        this.libroId = libroId;
-        this.isbn = isbn;
-        this.titulo = titulo;
-        this.autor = autor;
-        this.categoria = categoria;
-        this.estadoUso = "Prestado".equals(estado);
-    }
-
+    // Getters y setters
     public Long getLibroId() {
         return libroId;
     }
@@ -64,10 +54,18 @@ public class LibroDTO {
     }
 
     public String getEstado() {
-        return estadoUso != null && estadoUso ? "Prestado" : "Disponible";
+        return estadoUso ? "Disponible" : "Prestado";
     }
 
     public void setEstado(String estado) {
-        this.estadoUso = "Prestado".equals(estado);
+        this.estadoUso = "Disponible".equals(estado);
+    }
+
+    public boolean getEstadoUso() {
+        return estadoUso;
+    }
+
+    public void setEstadoUso(boolean estadoUso) {
+        this.estadoUso = estadoUso;
     }
 }
