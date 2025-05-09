@@ -28,26 +28,20 @@ public class ApiClient {
             conn.setRequestProperty("Content-Type", "application/json");
 
             String loginInput = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", usuario, contrasenya);
-            System.out.println("Enviando login: " + loginInput);
             try (OutputStream os = conn.getOutputStream()) {
                 os.write(loginInput.getBytes(StandardCharsets.UTF_8));
             }
 
             int responseCode = conn.getResponseCode();
-            System.out.println("Código de respuesta de login: " + responseCode);
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 String response = readResponse(conn);
-                System.out.println("Respuesta de login: " + response);
                 String token = new Gson().fromJson(response, TokenResponse.class).getToken();
-                System.out.println("Token recibido: " + token);
                 AuthContext.setJwtToken(token);
                 return token;
             } else {
-                System.err.println("Login fallido: " + responseCode + " - " + readResponse(conn));
                 return "";
             }
         } catch (Exception e) {
-            System.err.println("Error al hacer el login: " + e.getMessage());
             return "";
         }
     }
@@ -55,7 +49,7 @@ public class ApiClient {
 
     public Map<String, String> fetchTranslations(String language) {
         try {
-            URL url = new URL(BASE_URL + "/bibliotecaferreria/i18n/messages");
+            URL url = new URL(BASE_URL + "/public/bibliotecaferreria/i18n/messages");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept-Language", language);
@@ -64,12 +58,9 @@ public class ApiClient {
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 String response = readResponse(conn);
                 return new Gson().fromJson(response, new TypeToken<Map<String, String>>(){}.getType());
-            } else {
-                System.err.println("Error al obtener traducciones: " + responseCode);
-                return null;
             }
+            return null;
         } catch (Exception e) {
-            System.err.println("Error al obtener traducciones: " + e.getMessage());
             return null;
         }
     }
@@ -80,24 +71,22 @@ public class ApiClient {
                 URL url = new URL(BASE_URL + endpoint);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
+                if (AuthContext.getJwtToken() != null) {
+                    conn.setRequestProperty("Authorization", "Bearer " + AuthContext.getJwtToken());
+                }
 
-                System.out.println("Enviando solicitud a: " + endpoint);
                 int responseCode = conn.getResponseCode();
-                System.out.println("Código de respuesta: " + responseCode);
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     return readResponse(conn);
-                } else {
-                    System.err.println("Error en la solicitud a " + endpoint + ": " + responseCode);
-                    return null;
                 }
+                return null;
             } catch (Exception e) {
-                System.err.println("Error al realizar la solicitud a " + endpoint + ": " + e.getMessage());
                 return null;
             }
         });
     }
 
-    public String createLibro(LibroDTO libroDTO) {
+    public LibroDTO createLibro(LibroDTO libroDTO) throws Exception {
         String apiUrl = "/public/libros";
         try {
             URL url = new URL(BASE_URL + apiUrl);
@@ -105,6 +94,9 @@ public class ApiClient {
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
+            if (AuthContext.getJwtToken() != null) {
+                conn.setRequestProperty("Authorization", "Bearer " + AuthContext.getJwtToken());
+            }
 
             String jsonInput = new Gson().toJson(libroDTO);
             try (OutputStream os = conn.getOutputStream()) {
@@ -112,17 +104,16 @@ public class ApiClient {
             }
 
             int responseCode = conn.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_CREATED && responseCode != HttpURLConnection.HTTP_OK) {
-                return "Error: " + responseCode + " - " + readResponse(conn);
+            if (responseCode == HttpURLConnection.HTTP_CREATED) {
+                return new Gson().fromJson(readResponse(conn), LibroDTO.class);
             }
-            return readResponse(conn);
+            throw new Exception("Error: " + responseCode + " - " + readResponse(conn));
         } catch (Exception e) {
-            e.printStackTrace();
-            return "Error al conectar con la API: " + e.getMessage();
+            throw new Exception("Error al conectar con la API: " + e.getMessage());
         }
     }
 
-    public String updateLibro(LibroDTO libroDTO) {
+    public LibroDTO updateLibro(LibroDTO libroDTO) throws Exception {
         String apiUrl = "/public/libros/" + libroDTO.getIsbn();
         try {
             URL url = new URL(BASE_URL + apiUrl);
@@ -130,6 +121,9 @@ public class ApiClient {
             conn.setDoOutput(true);
             conn.setRequestMethod("PUT");
             conn.setRequestProperty("Content-Type", "application/json");
+            if (AuthContext.getJwtToken() != null) {
+                conn.setRequestProperty("Authorization", "Bearer " + AuthContext.getJwtToken());
+            }
 
             String jsonInput = new Gson().toJson(libroDTO);
             try (OutputStream os = conn.getOutputStream()) {
@@ -137,13 +131,12 @@ public class ApiClient {
             }
 
             int responseCode = conn.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                return "Error: " + responseCode + " - " + readResponse(conn);
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                return new Gson().fromJson(readResponse(conn), LibroDTO.class);
             }
-            return readResponse(conn);
+            throw new Exception("Error: " + responseCode + " - " + readResponse(conn));
         } catch (Exception e) {
-            e.printStackTrace();
-            return "Error al conectar con la API: " + e.getMessage();
+            throw new Exception("Error al conectar con la API: " + e.getMessage());
         }
     }
 
@@ -162,27 +155,35 @@ public class ApiClient {
 
     public String fetchLibroByIsbn(String isbn) {
         if (isbn == null || isbn.trim().isEmpty()) {
-            System.err.println("ISBN nulo o vacío, no se puede realizar la solicitud");
             return null;
         }
         return fetchData("/public/libros/" + isbn).join();
     }
 
-    public boolean eliminarLibroPorIsbn(String isbn) {
-        if (isbn == null || isbn.trim().isEmpty()) {
-            System.err.println("ISBN nulo o vacío, no se puede eliminar el libro");
-            return false;
+    public boolean eliminarLibroPorId(long id) throws Exception {
+        if (id == 0) {
+            throw new Exception("ID inválido");
         }
         try {
-            URL url = new URL(BASE_URL + "/public/libros/" + isbn);
+            URL url = new URL(BASE_URL + "/public/libros/" + id);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("DELETE");
+            if (AuthContext.getJwtToken() != null) {
+                conn.setRequestProperty("Authorization", "Bearer " + AuthContext.getJwtToken());
+            }
 
             int responseCode = conn.getResponseCode();
-            return responseCode >= 200 && responseCode < 300;
+            if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                throw new Exception("Libro no encontrado");
+            } else if (responseCode == HttpURLConnection.HTTP_CONFLICT) {
+                throw new Exception("El libro está asociado a registros de historial");
+            } else if (responseCode >= 200 && responseCode < 300) {
+                return true; // Success
+            } else {
+                throw new Exception("Error al eliminar: " + responseCode);
+            }
         } catch (Exception e) {
-            System.err.println("Error al eliminar el libro con ISBN " + isbn + ": " + e.getMessage());
-            return false;
+            throw new Exception("Error al eliminar el libro: " + e.getMessage());
         }
     }
     public boolean registrarUsuarioEnAPI(Usuario usuario) {
@@ -324,7 +325,6 @@ public class ApiClient {
 
     private static class TokenResponse {
         private String token;
-
         public String getToken() {
             return token;
         }

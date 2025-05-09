@@ -1,32 +1,26 @@
 package cat.ferreria.dekstop.model.clazz;
 
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class Libro {
-    private final LongProperty libroId = new SimpleLongProperty();
-    private final StringProperty isbn = new SimpleStringProperty();
-    private final StringProperty titulo = new SimpleStringProperty();
-    private final StringProperty autor = new SimpleStringProperty();
-    private final StringProperty categoria = new SimpleStringProperty();
-    private final StringProperty estado = new SimpleStringProperty();
+    private final StringProperty isbn;
+    private final StringProperty titulo;
+    private final StringProperty autor;
+    private final StringProperty categoria;
+    private final StringProperty estado;
+    private final Long libroId;
 
     public Libro(Long libroId, String isbn, String titulo, String autor, String categoria, String estado) {
-        this.libroId.set(libroId != null ? libroId : 0L);
-        this.isbn.set(isbn);
-        this.titulo.set(titulo);
-        this.autor.set(autor);
-        this.categoria.set(categoria);
-        this.estado.set(estado);
+        this.libroId = libroId;
+        this.isbn = new SimpleStringProperty(isbn);
+        this.titulo = new SimpleStringProperty(titulo);
+        this.autor = new SimpleStringProperty(autor);
+        this.categoria = new SimpleStringProperty(categoria);
+        this.estado = new SimpleStringProperty(estado);
     }
 
     public Long getLibroId() {
-        return libroId.get();
-    }
-
-    public LongProperty libroIdProperty() {
         return libroId;
     }
 
@@ -38,12 +32,20 @@ public class Libro {
         return isbn;
     }
 
+    public void setIsbn(String isbn) {
+        this.isbn.set(isbn);
+    }
+
     public String getTitulo() {
         return titulo.get();
     }
 
     public StringProperty tituloProperty() {
         return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo.set(titulo);
     }
 
     public String getAutor() {
@@ -54,6 +56,10 @@ public class Libro {
         return autor;
     }
 
+    public void setAutor(String autor) {
+        this.autor.set(autor);
+    }
+
     public String getCategoria() {
         return categoria.get();
     }
@@ -62,11 +68,19 @@ public class Libro {
         return categoria;
     }
 
+    public void setCategoria(String categoria) {
+        this.categoria.set(categoria);
+    }
+
     public String getEstado() {
         return estado.get();
     }
 
     public StringProperty estadoProperty() {
         return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado.set(estado);
     }
 }

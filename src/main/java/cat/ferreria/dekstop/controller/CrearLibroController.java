@@ -11,11 +11,9 @@ import java.util.function.Consumer;
 
 public class CrearLibroController {
 
-    @FXML private TextField txtId;
     @FXML private TextField txtISBN;
     @FXML private TextField txtTitulo;
     @FXML private TextField txtAutor;
-    @FXML private TextField txtEditorial;
     @FXML private TextField txtCategoria;
     @FXML private TextField txtCantidad;
     @FXML private ComboBox<String> cmbEstadoUso;
@@ -23,7 +21,6 @@ public class CrearLibroController {
     @FXML private Label isbnLabel;
     @FXML private Label tituloLabel;
     @FXML private Label autorLabel;
-    @FXML private Label editorialLabel;
     @FXML private Label categoriaLabel;
     @FXML private Label cantidadLabel;
     @FXML private Label estadoLabel;
@@ -68,7 +65,6 @@ public class CrearLibroController {
         isbnLabel.setText(messages.get("libro.isbn"));
         tituloLabel.setText(messages.get("libro.titulo"));
         autorLabel.setText(messages.get("libro.autor"));
-        editorialLabel.setText(messages.get("libro.editorial"));
         categoriaLabel.setText(messages.get("libro.categoria"));
         cantidadLabel.setText(messages.get("libro.cantidad"));
         estadoLabel.setText(messages.get("libro.estado"));
@@ -76,8 +72,8 @@ public class CrearLibroController {
 
     private void guardarLibro() {
         String isbn = txtISBN.getText().trim();
-        if (isbn.isEmpty()) {
-            showAlert(messages.get("alert.error"), messages.get("alert.completa.campos"));
+        if (isbn.isEmpty() || !isbn.matches("^[0-9]{10,13}$")) {
+            showAlert(messages.get("alert.error"), "ISBN inválido");
             return;
         }
 
@@ -87,10 +83,8 @@ public class CrearLibroController {
             return;
         }
 
-        Long libroId = txtId.getText().isEmpty() ? null : Long.parseLong(txtId.getText());
         String titulo = txtTitulo.getText().trim();
         String autor = txtAutor.getText().trim();
-        String editorial = txtEditorial.getText().trim();
         String categoria = txtCategoria.getText().trim();
         String estado = cmbEstadoUso.getSelectionModel().getSelectedItem();
 
@@ -117,25 +111,23 @@ public class CrearLibroController {
         }
 
         LibroDTO libroDTO = new LibroDTO();
-        libroDTO.setLibroId(libroId);
         libroDTO.setIsbn(isbn);
         libroDTO.setTitulo(titulo);
         libroDTO.setAutor(autor);
         libroDTO.setCategoria(categoria);
-        libroDTO.setEstado(estado);
+        libroDTO.setEstadoUso("Disponible".equals(estado));
 
-        String response = apiClient.createLibro(libroDTO);
-
-        if (response != null && !response.startsWith("Error")) {
-            showAlert(messages.get("alert.exito"), "El libro ha sido añadido correctamente");
+        try {
+            LibroDTO response = apiClient.createLibro(libroDTO);
+            showAlert(messages.get("alert.exito"), messages.get("alert.libro.anyadido"));
             if (onLibroCreado != null) {
-                Libro libro = new Libro(libroId, isbn, titulo, autor, categoria, estado);
+                Libro libro = new Libro(response.getLibroId(), isbn, titulo, autor, categoria, estado);
                 onLibroCreado.accept(libro);
             }
             Stage stage = (Stage) btnGuardar.getScene().getWindow();
             stage.close();
-        } else {
-            showAlert(messages.get("alert.error"), "No se ha podido añadir el libro");
+        } catch (Exception e) {
+            showAlert(messages.get("alert.error"), messages.get("alert.libro.noanyadido"));
         }
     }
 
