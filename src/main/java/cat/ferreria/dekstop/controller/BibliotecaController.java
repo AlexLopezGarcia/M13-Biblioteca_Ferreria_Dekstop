@@ -241,14 +241,19 @@ public class BibliotecaController {
     private void eliminarLibro() {
         Libro libroSeleccionado = tablaLibros.getSelectionModel().getSelectedItem();
         if (libroSeleccionado != null) {
-            boolean eliminado = apiClient.eliminarLibroPorID(libroSeleccionado.getLibroId());
-            if (eliminado) {
-                libros.remove(libroSeleccionado);
-                cargarLibrosDesdeApi();
-                _log.info("Libro eliminado: {}", libroSeleccionado.getTitulo());
-            } else {
-                _log.error("No se pudo eliminar el libro con ID: {}", libroSeleccionado.getLibroId());
-                showAlert(messages.get("alert.error"), "No se pudo eliminar el libro");
+            try {
+                boolean eliminado = apiClient.eliminarLibroPorId(libroSeleccionado.getLibroId());
+                if (eliminado) {
+                    libros.remove(libroSeleccionado);
+                    cargarLibrosDesdeApi(); // Refresh the book list
+                    _log.info("Libro eliminado: {}", libroSeleccionado.getTitulo());
+                } else {
+                    _log.error("No se pudo eliminar el libro con ID: {}", libroSeleccionado.getLibroId());
+                    showAlert(messages.get("alert.error"), "No se pudo eliminar el libro");
+                }
+            } catch (Exception e) {
+                _log.error("Error al eliminar el libro: {}", e.getMessage());
+                showAlert(messages.get("alert.error"), e.getMessage());
             }
         } else {
             _log.warn("No se seleccionó ningún libro para eliminar");

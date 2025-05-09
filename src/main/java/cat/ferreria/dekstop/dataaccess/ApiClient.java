@@ -151,12 +151,12 @@ public class ApiClient {
         return fetchData("/public/libros/" + isbn).join();
     }
 
-    public void eliminarLibroPorIsbn(String isbn) throws Exception {
-        if (isbn == null || isbn.trim().isEmpty()) {
-            throw new Exception("ISBN inválido");
+    public boolean eliminarLibroPorId(long id) throws Exception {
+        if (id == 0) {
+            throw new Exception("ID inválido");
         }
         try {
-            URL url = new URL(BASE_URL + "/public/libros/" + isbn);
+            URL url = new URL(BASE_URL + "/public/libros/" + id);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("DELETE");
             if (AuthContext.getJwtToken() != null) {
@@ -169,9 +169,10 @@ public class ApiClient {
             } else if (responseCode == HttpURLConnection.HTTP_CONFLICT) {
                 throw new Exception("El libro está asociado a registros de historial");
             } else if (responseCode >= 200 && responseCode < 300) {
-                return;
+                return true; // Success
+            } else {
+                throw new Exception("Error al eliminar: " + responseCode);
             }
-            throw new Exception("Error al eliminar: " + responseCode);
         } catch (Exception e) {
             throw new Exception("Error al eliminar el libro: " + e.getMessage());
         }
