@@ -15,7 +15,6 @@ public class ModificarLibroController {
     @FXML private TextField txtISBN;
     @FXML private TextField txtTitulo;
     @FXML private TextField txtAutor;
-    @FXML private TextField txtEditorial;
     @FXML private TextField txtCategoria;
     @FXML private TextField txtCantidad;
     @FXML private ComboBox<String> cmbEstadoUso;
@@ -23,7 +22,6 @@ public class ModificarLibroController {
     @FXML private Label isbnLabel;
     @FXML private Label tituloLabel;
     @FXML private Label autorLabel;
-    @FXML private Label editorialLabel;
     @FXML private Label categoriaLabel;
     @FXML private Label cantidadLabel;
     @FXML private Label estadoLabel;
@@ -72,7 +70,7 @@ public class ModificarLibroController {
             txtAutor.setText(libroSeleccionado.getAutor());
             txtCategoria.setText(libroSeleccionado.getCategoria());
             cmbEstadoUso.setValue(libroSeleccionado.getEstado());
-            txtISBN.setDisable(true); // ISBN no editable
+            txtISBN.setDisable(true);
         }
     }
 
@@ -82,7 +80,6 @@ public class ModificarLibroController {
         isbnLabel.setText(messages.get("libro.isbn"));
         tituloLabel.setText(messages.get("libro.titulo"));
         autorLabel.setText(messages.get("libro.autor"));
-        editorialLabel.setText(messages.get("libro.editorial"));
         categoriaLabel.setText(messages.get("libro.categoria"));
         cantidadLabel.setText(messages.get("libro.cantidad"));
         estadoLabel.setText(messages.get("libro.estado"));
@@ -94,6 +91,11 @@ public class ModificarLibroController {
         String autor = txtAutor.getText().trim();
         String categoria = txtCategoria.getText().trim();
         String estado = cmbEstadoUso.getSelectionModel().getSelectedItem();
+
+        if (!isbn.equals(libroSeleccionado.getIsbn())) {
+            showAlert(messages.get("alert.error"), "El ISBN no puede modificarse");
+            return;
+        }
 
         if (txtCantidad.getText().isEmpty()) {
             showAlert(messages.get("alert.error"), messages.get("alert.cantidad.invalida"));
@@ -123,20 +125,19 @@ public class ModificarLibroController {
         libroDTO.setTitulo(titulo);
         libroDTO.setAutor(autor);
         libroDTO.setCategoria(categoria);
-        libroDTO.setEstado(estado);
+        libroDTO.setEstadoUso("Disponible".equals(estado));
 
-        String response = apiClient.updateLibro(libroDTO);
-
-        if (response != null && !response.startsWith("Error")) {
-            showAlert(messages.get("alert.exito"), "El libro ha sido modificado correctamente");
+        try {
+            LibroDTO response = apiClient.updateLibro(libroDTO);
+            showAlert(messages.get("alert.exito"), messages.get("alert.exito"));
             if (onLibroModificado != null) {
                 Libro libro = new Libro(libroSeleccionado.getLibroId(), isbn, titulo, autor, categoria, estado);
                 onLibroModificado.accept(libro);
             }
             Stage stage = (Stage) btnGuardar.getScene().getWindow();
             stage.close();
-        } else {
-            showAlert(messages.get("alert.error"), "No se ha podido modificar el libro");
+        } catch (Exception e) {
+            showAlert(messages.get("alert.error"), messages.get("alert.libro.noanyadido"));
         }
     }
 

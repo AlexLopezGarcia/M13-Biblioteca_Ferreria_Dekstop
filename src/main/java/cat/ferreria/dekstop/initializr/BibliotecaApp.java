@@ -16,10 +16,24 @@ public class BibliotecaApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Map<String, String> messages = apiClient.fetchTranslations("es");
+        Map<String, String> messages = null;
+        for (int i = 0; i < 3 && messages == null; i++) {
+            messages = apiClient.fetchTranslations("es");
+            if (messages == null) Thread.sleep(1000);
+        }
         if (messages == null) {
             System.err.println("No se pudieron cargar las traducciones iniciales.");
-            messages = Map.of("app.title", "Biblioteca"); // Fallback
+            messages = Map.of(
+                    "app.title", "Biblioteca",
+                    "alert.error", "Error",
+                    "alert.no.seleccionado", "No se ha seleccionado ningún libro",
+                    "alert.error.conexion", "Error de conexión con el servidor",
+                    "alert.exito", "Éxito",
+                    "alert.libro.anyadido", "El libro ha sido añadido correctamente",
+                    "alert.libro.noanyadido", "No se ha podido añadir el libro",
+                    "alert.libro.eliminado", "Libro eliminado correctamente",
+                    "alert.libro.noeliminado", "No se ha podido eliminar el libro"
+            );
         }
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/biblioteca.fxml"));
