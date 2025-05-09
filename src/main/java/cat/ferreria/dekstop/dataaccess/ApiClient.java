@@ -51,12 +51,13 @@ public class ApiClient {
 
     public Map<String, String> fetchTranslations(String language) {
         try {
-            URL url = new URL(BASE_URL + "/bibliotecaferreria/i18n/messages");
+            URL url = new URL(BASE_URL + "/public/bibliotecaferreria/i18n/messages");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept-Language", language);
 
             int responseCode = conn.getResponseCode();
+            System.out.println("Código de respuesta de traducciones: " + responseCode);
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 String response = readResponse(conn);
                 return new Gson().fromJson(response, new TypeToken<Map<String, String>>(){}.getType());
@@ -159,20 +160,20 @@ public class ApiClient {
         return fetchData("/public/libros/" + isbn).join();
     }
 
-    public boolean eliminarLibroPorIsbn(String isbn) {
-        if (isbn == null || isbn.trim().isEmpty()) {
-            System.err.println("ISBN nulo o vacío, no se puede eliminar el libro");
+    public boolean eliminarLibroPorID(long libro_id) {
+        if (libro_id == 0) {
+            System.err.println("ID nulo o vacío, no se puede eliminar el libro");
             return false;
         }
         try {
-            URL url = new URL(BASE_URL + "/public/libros/" + isbn);
+            URL url = new URL(BASE_URL + "/public/libros/" + libro_id);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("DELETE");
 
             int responseCode = conn.getResponseCode();
             return responseCode >= 200 && responseCode < 300;
         } catch (Exception e) {
-            System.err.println("Error al eliminar el libro con ISBN " + isbn + ": " + e.getMessage());
+            System.err.println("Error al eliminar el libro con ISBN " + libro_id + ": " + e.getMessage());
             return false;
         }
     }
