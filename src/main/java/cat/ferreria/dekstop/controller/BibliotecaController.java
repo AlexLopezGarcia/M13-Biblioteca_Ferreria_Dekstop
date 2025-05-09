@@ -252,7 +252,7 @@ public class BibliotecaController {
                     showAlert(messages.get("alert.error"), "No se pudo eliminar el libro");
                 }
             } catch (Exception e) {
-                _log.error("Error al eliminar el libro: {}", e.getMessage());
+                _log.error(e.getMessage());
                 showAlert(messages.get("alert.error"), e.getMessage());
             }
         } else {
