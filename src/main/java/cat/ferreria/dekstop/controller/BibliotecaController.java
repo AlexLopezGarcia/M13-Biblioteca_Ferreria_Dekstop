@@ -86,7 +86,7 @@ public class BibliotecaController {
                 messages = messageFetcher.apply(selectedLang);
                 updateUI();
             } catch (Exception e) {
-                showAlert(messages != null ? messages.get("alert.error") : "Error", "No se pudo cambiar el idioma");
+                showAlert(Alert.AlertType.ERROR, messages != null ? messages.get("alert.error") : "Error", "No se pudo cambiar el idioma");
             }
         });
 
@@ -160,11 +160,11 @@ public class BibliotecaController {
                 _log.info("Total libros cargados: {}", libros.size());
             } catch (Exception e) {
                 _log.error("Error al deserializar libros: {}", e.getMessage(), e);
-                showAlert(messages.get("alert.error"), "Error al procesar los datos de los libros.");
+                showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "Error al procesar los datos de los libros.");
             }
         } else {
             _log.error("Error al obtener los libros de la API: respuesta nula o vacía");
-            showAlert(messages.get("alert.error"), "No se pudo cargar la lista de libros.");
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "No se pudo cargar la lista de libros.");
         }
     }
 
@@ -191,15 +191,15 @@ public class BibliotecaController {
                         _log.info("Libro encontrado: {}", libro.getTitulo());
                     } else {
                         _log.warn("LibroDTO nulo o sin ISBN para ISBN: {}", isbn);
-                        showAlert(messages.get("alert.error"), "Libro no encontrado.");
+                        showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "Libro no encontrado.");
                     }
                 } catch (Exception e) {
                     _log.error("Error al deserializar libro: {}", e.getMessage(), e);
-                    showAlert(messages.get("alert.error"), "Error al procesar el libro.");
+                    showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "Error al procesar el libro.");
                 }
             } else {
                 _log.error("Error al buscar libro con ISBN: {}", isbn);
-                showAlert(messages.get("alert.error"), "No se pudo encontrar el libro.");
+                showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "No se pudo encontrar el libro.");
             }
         } else {
             cargarLibrosDesdeApi();
@@ -219,14 +219,14 @@ public class BibliotecaController {
             pantallaCrearLibro.show();
         } catch (Exception e) {
             _log.error("Error al abrir pantalla de crear libro: {}", e.getMessage(), e);
-            showAlert(messages.get("alert.error"), "Error al abrir la pantalla de crear libro");
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "Error al abrir la pantalla de crear libro");
         }
     }
 
     private void openPantallaModificarLibro() {
         Libro libroSeleccionado = tablaLibros.getSelectionModel().getSelectedItem();
         if (libroSeleccionado == null) {
-            showAlert(messages.get("alert.error"), messages.get("alert.no.seleccionado"));
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), messages.get("alert.no.seleccionado"));
             return;
         }
         PantallaModificarLibro pantallaModificarLibro = new PantallaModificarLibro(libro -> cargarLibrosDesdeApi(), libroSeleccionado, messages);
@@ -234,30 +234,59 @@ public class BibliotecaController {
             pantallaModificarLibro.show();
         } catch (Exception e) {
             _log.error("Error al abrir pantalla de modificar libro: {}", e.getMessage(), e);
-            showAlert(messages.get("alert.error"), "Error al abrir la pantalla de modificar libro");
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), messages.get("alert.error.abrir.pantalla.modificarlibro"));
         }
     }
 
     private void eliminarLibro() {
         Libro libroSeleccionado = tablaLibros.getSelectionModel().getSelectedItem();
-        if (libroSeleccionado != null) {
+        if (libroSeleccionado == null) {
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), messages.get("alert.no.seleccionado"));
+            return;
+        }
+
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle(messages.get("alert.confirmacion"));
+        confirmAlert.setHeaderText(null);
+        confirmAlert.setContentText(messages.get("alert.confirmar.eliminar"));
+        Optional<ButtonType> result = confirmAlert.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 boolean eliminado = apiClient.eliminarLibroPorId(libroSeleccionado.getLibroId());
                 if (eliminado) {
                     libros.remove(libroSeleccionado);
-                    cargarLibrosDesdeApi(); // Refresh the book list
+                    cargarLibrosDesdeApi();
                     _log.info("Libro eliminado: {}", libroSeleccionado.getTitulo());
-                } else {
-                    _log.error("No se pudo eliminar el libro con ID: {}", libroSeleccionado.getLibroId());
-                    showAlert(messages.get("alert.error"), "No se pudo eliminar el libro");
+                    showAlert(Alert.AlertType.INFORMATION, messages.get("alert.exito"), messages.get("alert.libro.eliminado"));
                 }
             } catch (Exception e) {
-                _log.error(e.getMessage());
-                showAlert(messages.get("alert.error"), e.getMessage());
+                if (e.getMessage().contains("asociado a registros de historial")) {
+                    Alert historialAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                    historialAlert.setTitle(messages.get("alert.confirmacion"));
+                    historialAlert.setHeaderText(null);
+                    historialAlert.setContentText(messages.get("alert.libro.noeliminado.historial"));
+                    Optional<ButtonType> historialResult = historialAlert.showAndWait();
+
+                    if (historialResult.isPresent() && historialResult.get() == ButtonType.OK) {
+                        try {
+                            boolean eliminadoForzado = apiClient.eliminarLibroPorId(libroSeleccionado.getLibroId(), true);
+                            if (eliminadoForzado) {
+                                libros.remove(libroSeleccionado);
+                                cargarLibrosDesdeApi();
+                                _log.info("Libro con historial eliminado: {}", libroSeleccionado.getTitulo());
+                                showAlert(Alert.AlertType.INFORMATION, messages.get("alert.exito"), messages.get("alert.libro.eliminado"));
+                            }
+                        } catch (Exception ex) {
+                            _log.error("Error al eliminar el libro con historial: {}", ex.getMessage());
+                            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), ex.getMessage());
+                        }
+                    }
+                } else {
+                    _log.error("Error al eliminar el libro: {}", e.getMessage());
+                    showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), e.getMessage());
+                }
             }
-        } else {
-            _log.warn("No se seleccionó ningún libro para eliminar");
-            showAlert(messages.get("alert.error"), messages.get("alert.no.seleccionado"));
         }
     }
 
@@ -289,7 +318,7 @@ public class BibliotecaController {
 
         if (result.isEmpty() || result.get() != ButtonType.OK) {
             _log.info("Inicio de sesión cancelado por el usuario");
-            showAlert(messages.get("alert.error"), messages.get("alert.login.cancelado"));
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), messages.get("alert.login.cancelado"));
             return;
         }
 
@@ -298,7 +327,7 @@ public class BibliotecaController {
 
         if (username.trim().isEmpty() || password.trim().isEmpty()) {
             _log.warn("Intento de login con campos vacíos");
-            showAlert(messages.get("alert.error"), messages.get("alert.completa.campos"));
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), messages.get("alert.completa.campos"));
             return;
         }
 
@@ -309,13 +338,13 @@ public class BibliotecaController {
 
         if (!sanitizedUsername.matches("^[a-zA-Z0-9._-]{3,20}$")) {
             _log.warn("Username inválido: {}", sanitizedUsername);
-            showAlert(messages.get("alert.error"), messages.get("alert.username.invalido"));
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), messages.get("alert.username.invalido"));
             return;
         }
 
         if (password.length() < 4 || password.length() > 50) {
             _log.warn("Longitud de contraseña inválida para usuario: {}", sanitizedUsername);
-            showAlert(messages.get("alert.error"), messages.get("alert.password.invalido"));
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), messages.get("alert.password.invalido"));
             return;
         }
 
@@ -325,14 +354,15 @@ public class BibliotecaController {
             cargarLibrosDesdeApi();
         } else {
             _log.warn("Login fallido para usuario: {}", sanitizedUsername);
-            showAlert(messages.get("alert.error"), "Login fallido");
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "Login fallido");
         }
     }
 
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
         alert.setTitle(title);
-        alert.setContentText(content);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
         alert.showAndWait();
     }
 }
