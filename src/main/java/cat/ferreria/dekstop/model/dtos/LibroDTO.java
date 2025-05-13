@@ -9,6 +9,8 @@ public class LibroDTO {
     private String titulo;
     private String autor;
     private String categoria;
+    private String editorial;
+    private Integer cantidad;
     @SerializedName("estadoUso")
     private boolean estadoUso;
 
@@ -16,7 +18,6 @@ public class LibroDTO {
     public Long getLibroId() {
         return libroId;
     }
-
     public void setLibroId(Long libroId) {
         this.libroId = libroId;
     }
@@ -24,7 +25,6 @@ public class LibroDTO {
     public String getIsbn() {
         return isbn;
     }
-
     public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
@@ -32,7 +32,6 @@ public class LibroDTO {
     public String getTitulo() {
         return titulo;
     }
-
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
@@ -40,7 +39,6 @@ public class LibroDTO {
     public String getAutor() {
         return autor;
     }
-
     public void setAutor(String autor) {
         this.autor = autor;
     }
@@ -48,15 +46,27 @@ public class LibroDTO {
     public String getCategoria() {
         return categoria;
     }
-
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public String getEditorial() {
+        return editorial;
+    }
+    public void setEditorial(String editorial) {
+        this.editorial = editorial;
+    }
+
+    public Integer getCantidad() {
+        return cantidad;
+    }
+    public void setCantidad(Integer cantidad) {
+        this.cantidad = cantidad;
     }
 
     public String getEstado() {
         return estadoUso ? "Disponible" : "Prestado";
     }
-
     public void setEstado(String estado) {
         this.estadoUso = "Disponible".equals(estado);
     }
@@ -64,7 +74,6 @@ public class LibroDTO {
     public boolean getEstadoUso() {
         return estadoUso;
     }
-
     public void setEstadoUso(boolean estadoUso) {
         this.estadoUso = estadoUso;
     }

@@ -7,6 +7,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -31,19 +33,6 @@ public class ModificarLibroController {
     private Libro libroSeleccionado;
     private Map<String, String> messages;
 
-    public void setOnLibroModificado(Consumer<Libro> onLibroModificado) {
-        this.onLibroModificado = onLibroModificado;
-    }
-
-    public void setLibroSeleccionado(Libro libroSeleccionado) {
-        this.libroSeleccionado = libroSeleccionado;
-    }
-
-    public void setMessages(Map<String, String> messages) {
-        this.messages = messages;
-        updateUI();
-    }
-
     @FXML
     private void initialize() {
         cmbEstadoUso.getItems().addAll("Disponible", "Prestado");
@@ -63,15 +52,33 @@ public class ModificarLibroController {
                 }
             }
         });
+    }
 
-        if (libroSeleccionado != null) {
-            txtISBN.setText(libroSeleccionado.getIsbn());
-            txtTitulo.setText(libroSeleccionado.getTitulo());
-            txtAutor.setText(libroSeleccionado.getAutor());
-            txtCategoria.setText(libroSeleccionado.getCategoria());
-            cmbEstadoUso.setValue(libroSeleccionado.getEstado());
-            txtISBN.setDisable(true);
+    public void setMessages(Map<String, String> messages) {
+        this.messages = messages;
+        updateUI();
+    }
+
+    public void setOnLibroModificado(Consumer<Libro> onLibroModificado) {
+        this.onLibroModificado = onLibroModificado;
+    }
+
+    public void setLibroSeleccionado(Libro libroSeleccionado) {
+        this.libroSeleccionado = libroSeleccionado;
+        populateFields();
+    }
+
+    private void populateFields() {
+        if (libroSeleccionado == null){
+            return;
         }
+
+        txtISBN.setText(libroSeleccionado.getIsbn());
+        txtISBN.setDisable(true);
+        txtTitulo.setText(libroSeleccionado.getTitulo());
+        txtAutor.setText(libroSeleccionado.getAutor());
+        txtCategoria.setText(libroSeleccionado.getCategoria());
+        cmbEstadoUso.setValue(libroSeleccionado.getEstado());
     }
 
     private void updateUI() {
@@ -90,52 +97,38 @@ public class ModificarLibroController {
         String titulo = txtTitulo.getText().trim();
         String autor = txtAutor.getText().trim();
         String categoria = txtCategoria.getText().trim();
-        String estado = cmbEstadoUso.getSelectionModel().getSelectedItem();
-
-        if (!isbn.equals(libroSeleccionado.getIsbn())) {
-            showAlert(messages.get("alert.error"), "El ISBN no puede modificarse");
-            return;
-        }
-
-        if (txtCantidad.getText().isEmpty()) {
-            showAlert(messages.get("alert.error"), messages.get("alert.cantidad.invalida"));
-            return;
-        }
-
+        String estado = cmbEstadoUso.getValue();
         int cantidad;
-        try {
-            cantidad = Integer.parseInt(txtCantidad.getText());
-            if (cantidad < 0 || cantidad > 99) {
-                showAlert(messages.get("alert.error"), messages.get("alert.cantidad.rango"));
-                return;
-            }
-        } catch (NumberFormatException e) {
-            showAlert(messages.get("alert.error"), messages.get("alert.cantidad.numero"));
-            return;
-        }
 
         if (titulo.isEmpty() || autor.isEmpty() || categoria.isEmpty() || estado == null) {
             showAlert(messages.get("alert.error"), messages.get("alert.completa.campos"));
             return;
         }
+        try {
+            cantidad = Integer.parseInt(txtCantidad.getText());
+            if (cantidad < 0 || cantidad > 99) throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            showAlert(messages.get("alert.error"), messages.get("alert.cantidad.invalida"));
+            return;
+        }
 
-        LibroDTO libroDTO = new LibroDTO();
-        libroDTO.setLibroId(libroSeleccionado.getLibroId());
-        libroDTO.setIsbn(isbn);
-        libroDTO.setTitulo(titulo);
-        libroDTO.setAutor(autor);
-        libroDTO.setCategoria(categoria);
-        libroDTO.setEstadoUso("Disponible".equals(estado));
+        LibroDTO dto = new LibroDTO();
+        dto.setLibroId(libroSeleccionado.getLibroId());
+        dto.setIsbn(isbn);
+        dto.setTitulo(titulo);
+        dto.setAutor(autor);
+        dto.setCategoria(categoria);
+        dto.setCantidad(cantidad);
+        dto.setEstadoUso("Disponible".equals(estado));
 
         try {
-            LibroDTO response = apiClient.updateLibro(libroDTO);
+            LibroDTO actualizado = apiClient.updateLibro(dto);
             showAlert(messages.get("alert.exito"), messages.get("alert.exito"));
             if (onLibroModificado != null) {
-                Libro libro = new Libro(libroSeleccionado.getLibroId(), isbn, titulo, autor, categoria, estado);
+                Libro libro = new Libro(actualizado.getLibroId(), isbn, titulo, autor, categoria, estado);
                 onLibroModificado.accept(libro);
             }
-            Stage stage = (Stage) btnGuardar.getScene().getWindow();
-            stage.close();
+            ((Stage) btnGuardar.getScene().getWindow()).close();
         } catch (Exception e) {
             showAlert(messages.get("alert.error"), messages.get("alert.libro.noanyadido"));
         }
