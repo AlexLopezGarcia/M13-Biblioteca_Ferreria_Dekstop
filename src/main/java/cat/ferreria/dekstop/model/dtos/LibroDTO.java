@@ -10,7 +10,6 @@ public class LibroDTO {
     private String autor;
     private String categoria;
     private String editorial;
-    private Integer cantidad;
     @SerializedName("estadoUso")
     private boolean estadoUso;
 
@@ -55,13 +54,6 @@ public class LibroDTO {
     }
     public void setEditorial(String editorial) {
         this.editorial = editorial;
-    }
-
-    public Integer getCantidad() {
-        return cantidad;
-    }
-    public void setCantidad(Integer cantidad) {
-        this.cantidad = cantidad;
     }
 
     public String getEstado() {
