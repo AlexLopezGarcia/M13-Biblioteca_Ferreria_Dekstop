@@ -175,7 +175,6 @@ public class ApiClient {
         }
     }
 
-    // Sobrecarga para mantener firma anterior
     public boolean eliminarLibroPorId(long id) throws Exception {
         return eliminarLibroPorId(id, false);
     }
