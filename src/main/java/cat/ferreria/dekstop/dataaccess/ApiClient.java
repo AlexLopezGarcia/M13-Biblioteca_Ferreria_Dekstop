@@ -160,31 +160,33 @@ public class ApiClient {
         return fetchData("/public/libros/" + isbn).join();
     }
 
-    public boolean eliminarLibroPorId(long id) throws Exception {
+    public boolean eliminarLibroPorId(long id, boolean force) throws Exception {
         if (id == 0) {
             throw new Exception("ID inválido");
         }
-        try {
-            URL url = new URL(BASE_URL + "/public/libros/" + id);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("DELETE");
-            if (AuthContext.getJwtToken() != null) {
-                conn.setRequestProperty("Authorization", "Bearer " + AuthContext.getJwtToken());
-            }
-
-            int responseCode = conn.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                throw new Exception("Libro no encontrado");
-            } else if (responseCode == HttpURLConnection.HTTP_CONFLICT) {
-                throw new Exception("El libro está asociado a registros de historial");
-            } else if (responseCode >= 200 && responseCode < 300) {
-                return true; // Success
-            } else {
-                throw new Exception("Error al eliminar: " + responseCode);
-            }
-        } catch (Exception e) {
-            throw new Exception("Error al eliminar el libro: " + e.getMessage());
+        String urlStr = BASE_URL + "/public/libros/" + id + (force ? "?force=true" : "");
+        URL url = new URL(urlStr);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("DELETE");
+        if (AuthContext.getJwtToken() != null) {
+            conn.setRequestProperty("Authorization", "Bearer " + AuthContext.getJwtToken());
         }
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+            throw new Exception("Libro no encontrado");
+        } else if (responseCode == HttpURLConnection.HTTP_CONFLICT) {
+            throw new Exception("El libro está asociado a registros de historial");
+        } else if (responseCode >= 200 && responseCode < 300) {
+            return true;
+        } else {
+            throw new Exception("Error al eliminar: " + responseCode);
+        }
+    }
+
+    // Sobrecarga para mantener firma anterior
+    public boolean eliminarLibroPorId(long id) throws Exception {
+        return eliminarLibroPorId(id, false);
     }
     public boolean registrarUsuarioEnAPI(Usuario usuario) {
         String apiUrl = "http://localhost:9090/usuarios";

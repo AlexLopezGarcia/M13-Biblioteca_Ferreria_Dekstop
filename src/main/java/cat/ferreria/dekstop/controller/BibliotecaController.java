@@ -29,6 +29,7 @@ import java.util.function.Function;
 public class BibliotecaController {
     private static final Logger _log = LoggerFactory.getLogger(BibliotecaController.class);
 
+    @FXML TextField idField;
     @FXML private TextField isbnField;
     @FXML private TextField tituloField;
     @FXML private TextField autorField;
@@ -42,13 +43,11 @@ public class BibliotecaController {
     @FXML private Button btnRegistrarPrestamo;
     @FXML private Button btnLogarse;
     @FXML private Button btnRegistrarUsuario;
-    @FXML private Button btnModificarUsuario;
-    @FXML private ComboBox<Idioma> languageSelector;
+    @FXML private ComboBox<String> languageSelector;
     @FXML private Label isbnLabel;
     @FXML private Label tituloLabel;
     @FXML private Label autorLabel;
     @FXML private Label categoriaLabel;
-    private final Gson gson = new Gson();
 
     @FXML private TableView<Libro> tablaLibros;
     @FXML private TableColumn<Libro, String> colISBN;
