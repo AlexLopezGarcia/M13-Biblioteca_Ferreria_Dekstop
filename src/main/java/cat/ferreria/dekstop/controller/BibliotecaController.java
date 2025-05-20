@@ -374,7 +374,7 @@ public class BibliotecaController {
 
     private void mostrarPantallaPrestamo() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/pantallaPrestamo.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/pantallaPrestamo.fxml"));
             Parent root = loader.load();
 
             PrestamoController controller = loader.getController();
