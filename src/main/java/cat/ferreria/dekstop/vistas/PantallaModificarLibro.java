@@ -23,7 +23,7 @@ public class PantallaModificarLibro {
     }
 
     public void show() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/modificarLibro.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/modificarLibro.fxml"));
         Scene scene = new Scene(loader.load());
         ModificarLibroController controller = loader.getController();
         controller.setOnLibroModificado(onLibroModificado);
