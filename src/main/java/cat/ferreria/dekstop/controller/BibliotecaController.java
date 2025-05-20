@@ -43,7 +43,7 @@ public class BibliotecaController {
     @FXML private Button btnRegistrarPrestamo;
     @FXML private Button btnLogarse;
     @FXML private Button btnRegistrarUsuario;
-    @FXML private ComboBox<String> languageSelector;
+    @FXML private ComboBox<Idioma> languageSelector;
     @FXML private Label isbnLabel;
     @FXML private Label tituloLabel;
     @FXML private Label autorLabel;
@@ -92,8 +92,6 @@ public class BibliotecaController {
         cargarLibrosDesdeApi();
         updateUI();
 
-        btnRegistrarUsuario.setVisible(false);
-        btnModificarUsuario.setVisible(false);
         btnAnyadir.setOnAction(event -> openPantallaCrearLibro());
         btnModificar.setOnAction(event -> abrirModificarUsuario());
         buscarButton.setOnAction(event -> buscarLibros());
@@ -308,7 +306,6 @@ public class BibliotecaController {
 
     public void mostrarBotonesUsuario() {
         btnRegistrarUsuario.setVisible(true);
-        btnModificarUsuario.setVisible(true);
     }
 
     @FXML
@@ -318,7 +315,7 @@ public class BibliotecaController {
             Parent root = loader.load();
 
             ModificarUsuarioController controller = loader.getController();
-            controller.setMessages(messages);  // ¡Aquí se pasa el idioma actual!
+            controller.setMessages(messages);
 
             Stage stage = new Stage();
             stage.setTitle("Modificar Usuario");
@@ -332,7 +329,12 @@ public class BibliotecaController {
     private void eliminarLibro() {
         Libro libroSeleccionado = tablaLibros.getSelectionModel().getSelectedItem();
         if (libroSeleccionado != null) {
-            boolean eliminado = apiClient.eliminarLibroPorIsbn(libroSeleccionado.getIsbn());
+            boolean eliminado = false;
+            try {
+                eliminado = apiClient.eliminarLibroPorId(libroSeleccionado.getLibroId());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             if (eliminado) {
                 libros.remove(libroSeleccionado);
                 cargarLibrosDesdeApi();

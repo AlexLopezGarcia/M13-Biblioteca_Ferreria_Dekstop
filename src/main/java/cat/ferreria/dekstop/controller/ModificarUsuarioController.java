@@ -212,20 +212,40 @@ public class ModificarUsuarioController {
 
     private void cargarUsuariosDesdeApi() {
         String jsonUsuarios = apiClient.fetchUsuarios();
-        if (jsonUsuarios != null) {
+
+        if (jsonUsuarios == null || jsonUsuarios.trim().isEmpty()) {
+            mostrarAlerta(Alert.AlertType.WARNING,
+                    "Error", "Respuesta vacía", "No se recibieron datos de usuarios.");
+            return;
+        }
+
+        // Validación básica del formato JSON esperado
+        if (!jsonUsuarios.trim().startsWith("[")) {
+            mostrarAlerta(Alert.AlertType.ERROR,
+                    "Error", "Formato inesperado",
+                    "La respuesta del servidor no es una lista de usuarios.\nContenido:\n" + jsonUsuarios);
+            return;
+        }
+
+        try {
             Gson gson = new Gson();
             UsuarioDTO[] usuariosArray = gson.fromJson(jsonUsuarios, UsuarioDTO[].class);
+
             usuarios.clear();
             for (UsuarioDTO dto : usuariosArray) {
                 usuarios.add(new Usuario(dto.getDni(), dto.getNombre(), dto.getContrasena(), dto.getCorreoElectronico()));
             }
-        } else {
+
+            tablaUsuarios.setItems(usuarios); // restablecer tabla a todos los usuarios
+
+        } catch (Exception e) {
             mostrarAlerta(Alert.AlertType.WARNING,
                     messages.get("alert.seleccion.unica.titulo"),
                     messages.get("alert.seleccion.unica.cabecera"),
                     messages.get("alert.seleccion.unica.contenido"));
         }
     }
+
     private void buscarUsuarios() {
         String dni = dniField.getText().trim().toLowerCase();
         String nombre = nombreField.getText().trim().toLowerCase();
