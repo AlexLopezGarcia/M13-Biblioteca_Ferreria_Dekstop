@@ -8,10 +8,20 @@ import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 
 import java.util.Map;
 import java.util.Optional;
@@ -105,6 +115,8 @@ public class BibliotecaController {
         btnEliminar.setOnAction(event -> eliminarLibro());
         btnRecargar.setOnAction(event -> recargarLibros());
         btnLogarse.setOnAction(event -> mostrarPantallaLogin());
+        btnRegistrarDevolucion.setOnAction(event -> mostrarPantallaDevolucion());
+
     }
 
     private void updateUI() {
@@ -365,4 +377,23 @@ public class BibliotecaController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+    private void mostrarPantallaDevolucion() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/pantallaDevolucion.fxml"));
+            Parent root = loader.load();
+
+            DevolucionController controller = loader.getController();
+            controller.setMessages(messages);
+
+            Stage stage = new Stage();
+            stage.setTitle(messages.get("pantalla.devolucion.titulo"));
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            _log.error("Error al abrir pantalla devolución: {}", e.getMessage(), e);
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "No se pudo abrir la pantalla de devolución.");
+        }
+    }
+
 }
