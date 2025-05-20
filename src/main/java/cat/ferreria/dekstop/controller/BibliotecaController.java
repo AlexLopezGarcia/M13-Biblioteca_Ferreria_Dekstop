@@ -8,6 +8,10 @@ import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
@@ -105,6 +109,8 @@ public class BibliotecaController {
         btnEliminar.setOnAction(event -> eliminarLibro());
         btnRecargar.setOnAction(event -> recargarLibros());
         btnLogarse.setOnAction(event -> mostrarPantallaLogin());
+        btnRegistrarPrestamo.setOnAction(event -> mostrarPantallaPrestamo());
+
     }
 
     private void updateUI() {
@@ -365,4 +371,24 @@ public class BibliotecaController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    private void mostrarPantallaPrestamo() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/pantallaPrestamo.fxml"));
+            Parent root = loader.load();
+
+            PrestamoController controller = loader.getController();
+            controller.setMessages(messages);
+
+            Stage stage = new Stage();
+            stage.setTitle(messages.get("pantalla.prestamo.titulo"));
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            _log.error("Error al abrir la pantalla de préstamo: {}", e.getMessage(), e);
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "No se pudo abrir la pantalla de préstamo.");
+        }
+    }
+
 }
