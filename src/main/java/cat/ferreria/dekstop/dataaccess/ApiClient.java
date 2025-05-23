@@ -1,10 +1,13 @@
 package cat.ferreria.dekstop.dataaccess;
 
 import cat.ferreria.dekstop.AuthContext;
+import cat.ferreria.dekstop.model.clazz.Usuario;
 import cat.ferreria.dekstop.model.dtos.LibroDTO;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -42,6 +45,7 @@ public class ApiClient {
             return "";
         }
     }
+
 
     public Map<String, String> fetchTranslations(String language) {
         try {
@@ -144,6 +148,11 @@ public class ApiClient {
         return fetchData("/private/historial").join();
     }
 
+    public String fetchUsuarios() {
+        String apiUrl = "http://localhost:9090/usuarios";
+        return String.valueOf(fetchData(apiUrl));
+    }
+
     public String fetchLibroByIsbn(String isbn) {
         if (isbn == null || isbn.trim().isEmpty()) {
             return null;
@@ -178,6 +187,118 @@ public class ApiClient {
     public boolean eliminarLibroPorId(long id) throws Exception {
         return eliminarLibroPorId(id, false);
     }
+    public boolean registrarUsuarioEnAPI(Usuario usuario) {
+        String apiUrl = "http://localhost:9090/usuarios";
+        Gson gson = new Gson();
+
+        JsonObject jsonUsuario = new JsonObject();
+        jsonUsuario.addProperty("dni", usuario.getDni());
+        jsonUsuario.addProperty("nombre", usuario.getNombre());
+        jsonUsuario.addProperty("correoElectronico", usuario.getCorreoElectronico());
+        jsonUsuario.addProperty("contrasenya", usuario.getContrasena());
+
+        String usuarioJson = jsonUsuario.toString();
+
+        try {
+            URL url = new URL(apiUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = usuarioJson.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = conn.getResponseCode();
+            return responseCode == 201; // Código 201 = Creado correctamente
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean modificarUsuarioEnAPI(Usuario usuario) {
+        String apiUrl = "http://localhost:9090/usuarios";
+        Gson gson = new Gson();
+
+        JsonObject jsonUsuario = new JsonObject();
+        jsonUsuario.addProperty("nombre", usuario.getNombre());
+        jsonUsuario.addProperty("correoElectronico", usuario.getCorreoElectronico());
+        jsonUsuario.addProperty("contrasenya", usuario.getContrasena());
+
+        String usuarioJson = jsonUsuario.toString();
+
+        try {
+            URL url = new URL(apiUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("PUT");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = usuarioJson.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = conn.getResponseCode();
+            return responseCode == 200 || responseCode == 204;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean eliminarUsuarioEnAPI(String correo) {
+        String apiUrl = "http://localhost:9090/usuarios";
+
+        try {
+            URL url = new URL(apiUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("DELETE");
+            conn.setRequestProperty("Accept", "application/json");
+
+            int responseCode = conn.getResponseCode();
+            return responseCode == 200 || responseCode == 204;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean validarCredencialesEnAPI(String correo, String contrasena) {
+        String apiUrl = "http://localhost:9090/usuarios/sesion";
+
+        try {
+            String urlParameters = "correoElectronico=" + correo + "&contrasenya=" + contrasena;
+
+            byte[] postData = urlParameters.getBytes("utf-8");
+
+            URL url = new URL(apiUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setDoOutput(true);
+
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(postData, 0, postData.length);
+            }
+
+            int responseCode = conn.getResponseCode();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                    (responseCode >= 200 && responseCode < 300) ? conn.getInputStream() : conn.getErrorStream()
+            ));
+            StringBuilder response = new StringBuilder();
+            String output;
+            while ((output = br.readLine()) != null) {
+                response.append(output);
+            }
+            return responseCode == 200;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     private String readResponse(HttpURLConnection conn) throws Exception {
         int responseCode = conn.getResponseCode();
@@ -201,6 +322,7 @@ public class ApiClient {
             }
         }
     }
+
 
     private static class TokenResponse {
         private String token;

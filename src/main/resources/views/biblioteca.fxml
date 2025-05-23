@@ -12,10 +12,15 @@
             <Button fx:id="btnEliminar" />
             <Button fx:id="btnModificar" />
             <Button fx:id="btnAnyadir" />
+
             <Pane HBox.hgrow="ALWAYS" />
-            <ComboBox fx:id="languageSelector" />
-            <Button fx:id="btnLogarse" />
-            <Button fx:id="btnRegistrarUsuario" />
+
+            <!-- Ahora estos botones están pegados al ComboBox de idioma -->
+            <Button fx:id="btnRegistrarUsuario" onAction="#abrirRegistroUsuario" text="Registrar Usuario" />
+            <Button fx:id="btnModificarUsuario" onAction="#abrirModificarUsuario" text="Modificar Usuario" />
+
+            <ComboBox fx:id="languageSelector" prefWidth="150" />
+            <Button fx:id="btnLogarse" onAction="#abrirPanelSesion" />
         </HBox>
     </top>
 
