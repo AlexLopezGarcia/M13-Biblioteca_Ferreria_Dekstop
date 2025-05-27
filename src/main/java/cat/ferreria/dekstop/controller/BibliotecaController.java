@@ -19,6 +19,11 @@ import java.util.function.Function;
 
 public class BibliotecaController {
     private static final Logger _log = LoggerFactory.getLogger(BibliotecaController.class);
+    @FXML private TextField emailField;
+    @FXML private TextArea messageField;
+    @FXML private Label emailStatusLabel;
+
+    private EmailController emailController = new EmailController();
 
     @FXML TextField idField;
     @FXML private TextField isbnField;
@@ -365,4 +370,7 @@ public class BibliotecaController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+
+
 }

@@ -69,5 +69,6 @@
                 </VBox.margin>
             </TableView>
         </VBox>
+
     </center>
 </BorderPane>
