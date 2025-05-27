@@ -1,6 +1,7 @@
 package cat.ferreria.dekstop.controller;
 
 import cat.ferreria.dekstop.dataaccess.ApiClient;
+import cat.ferreria.dekstop.model.clazz.Idioma;
 import cat.ferreria.dekstop.model.clazz.Libro;
 import cat.ferreria.dekstop.model.dtos.LibroDTO;
 import cat.ferreria.dekstop.vistas.*;
@@ -28,6 +29,11 @@ import java.util.function.Function;
 
 public class BibliotecaController {
     private static final Logger _log = LoggerFactory.getLogger(BibliotecaController.class);
+    @FXML private TextField emailField;
+    @FXML private TextArea messageField;
+    @FXML private Label emailStatusLabel;
+
+    private EmailController emailController = new EmailController();
 
     @FXML TextField idField;
     @FXML private TextField isbnField;
@@ -264,6 +270,20 @@ public class BibliotecaController {
             showAlert(messages.get("alert.error"), "Error al abrir la pantalla de crear libro");
         }
     }
+    private void openPantallaModificarLibro() {
+        Libro libroSeleccionado = tablaLibros.getSelectionModel().getSelectedItem();
+        if (libroSeleccionado == null) {
+            showAlert(messages.get("alert.error"), messages.get("alert.no.seleccionado"));
+            return;
+        }
+        PantallaModificarLibro pantallaModificarLibro = new PantallaModificarLibro(libro -> cargarLibrosDesdeApi(), libroSeleccionado, messages);
+        try {
+            pantallaModificarLibro.show();
+        } catch (Exception e) {
+            _log.error("Error al abrir pantalla de modificar libro: {}", e.getMessage(), e);
+            showAlert(messages.get("alert.error"), messages.get("alert.error.abrir.pantalla.modificarlibro"));
+        }
+    }
     @FXML
     private void abrirRegistroUsuario() {
         try {
@@ -422,27 +442,5 @@ public class BibliotecaController {
         alert.setTitle(title);
         alert.setContentText(content);
         alert.showAndWait();
-    }
-    public static class Idioma {
-        private final String codigo;
-        private final String nombre;
-        private final Image icono;
-
-        public Idioma(String codigo, String nombre, Image icono) {
-            this.codigo = codigo;
-            this.nombre = nombre;
-            this.icono = icono;
-        }
-
-        public String getCodigo() { return codigo; }
-
-        public String getNombre() { return nombre; }
-
-        public Image getIcono() { return icono; }
-
-        @Override
-        public String toString() {
-            return nombre;
-        }
     }
 }
