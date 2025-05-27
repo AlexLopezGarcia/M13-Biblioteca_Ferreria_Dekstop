@@ -241,7 +241,7 @@ public class BibliotecaController {
             showAlert(messages.get("alert.error"), "Error al abrir la pantalla de crear libro");
         }
     }
-
+    @FXML
     private void abrirModificarUsuario() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/modificarUsuario.fxml"));
