@@ -256,7 +256,7 @@ public class BibliotecaController {
             e.printStackTrace();
         }
     }
-
+    @FXML
     private void abrirRegistroUsuario() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/registrarUsuario.fxml"));
@@ -272,7 +272,7 @@ public class BibliotecaController {
             showAlert("Error", "No se pudo abrir la pantalla para registrar usuario.");
         }
     }
-
+    @FXML
     private void abrirPanelSesion() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/sesion.fxml"));
@@ -331,5 +331,8 @@ public class BibliotecaController {
         alert.setTitle(title);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+    public void mostrarBotonesUsuario() {
+        btnRegistrarUsuario.setVisible(true);
     }
 }
