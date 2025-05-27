@@ -4,30 +4,26 @@ import cat.ferreria.dekstop.dataaccess.ApiClient;
 import cat.ferreria.dekstop.model.clazz.Libro;
 import cat.ferreria.dekstop.model.dtos.LibroDTO;
 import cat.ferreria.dekstop.vistas.*;
-import com.fasterxml.jackson.core.JsonFactory;
 import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 public class BibliotecaController {
     private static final Logger _log = LoggerFactory.getLogger(BibliotecaController.class);
+    @FXML private TextField emailField;
+    @FXML private TextArea messageField;
+    @FXML private Label emailStatusLabel;
+
+    private EmailController emailController = new EmailController();
 
     @FXML TextField idField;
     @FXML private TextField isbnField;
@@ -43,7 +39,7 @@ public class BibliotecaController {
     @FXML private Button btnRegistrarPrestamo;
     @FXML private Button btnLogarse;
     @FXML private Button btnRegistrarUsuario;
-    @FXML private ComboBox<Idioma> languageSelector;
+    @FXML private ComboBox<String> languageSelector;
     @FXML private Label isbnLabel;
     @FXML private Label tituloLabel;
     @FXML private Label autorLabel;
@@ -87,66 +83,33 @@ public class BibliotecaController {
 
         tablaLibros.setItems(libros);
 
-        configurarComboBoxIdiomas();
+        languageSelector.setItems(FXCollections.observableArrayList("es", "ca"));
+        languageSelector.setValue("es");
+        languageSelector.setOnAction(event -> {
+            String selectedLang = languageSelector.getValue();
+            try {
+                messages = messageFetcher.apply(selectedLang);
+                updateUI();
+            } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, messages != null ? messages.get("alert.error") : "Error", "No se pudo cambiar el idioma");
+            }
+        });
+
+        try {
+            messages = apiClient.fetchTranslations("es");
+            updateUI();
+        } catch (Exception e) {
+            System.err.println("Error al cargar mensajes iniciales: " + e.getMessage());
+        }
 
         cargarLibrosDesdeApi();
-        updateUI();
 
         btnAnyadir.setOnAction(event -> openPantallaCrearLibro());
-        btnModificar.setOnAction(event -> abrirModificarUsuario());
+        btnModificar.setOnAction(event -> openPantallaModificarLibro());
         buscarButton.setOnAction(event -> buscarLibros());
         btnEliminar.setOnAction(event -> eliminarLibro());
         btnRecargar.setOnAction(event -> recargarLibros());
-        btnLogarse.setOnAction(event -> abrirPanelSesion());
-    }
-
-    private void configurarComboBoxIdiomas() {
-        Idioma cat = new Idioma("ca", "Català", new Image(getClass().getResource("/img/catalunya.png").toExternalForm()));
-        Idioma esp = new Idioma("es", "Español", new Image(getClass().getResource("/img/espana.png").toExternalForm()));
-
-        languageSelector.setItems(FXCollections.observableArrayList(cat, esp));
-        languageSelector.getSelectionModel().select(esp); // Español por defecto
-
-        // Mostrar icono y nombre
-        languageSelector.setCellFactory(new Callback<>() {
-            @Override
-            public ListCell<Idioma> call(ListView<Idioma> param) {
-                return new ListCell<>() {
-                    private final ImageView imageView = new ImageView();
-
-                    @Override
-                    protected void updateItem(Idioma item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty || item == null) {
-                            setText(null);
-                            setGraphic(null);
-                        } else {
-                            imageView.setImage(item.getIcono());
-                            imageView.setFitWidth(24);
-                            imageView.setFitHeight(16);
-                            setText(item.getNombre());
-                            setGraphic(imageView);
-                        }
-                    }
-                };
-            }
-        });
-
-        // Mostrar icono también en el botón cerrado
-        languageSelector.setButtonCell(languageSelector.getCellFactory().call(null));
-
-        // Cambiar idioma cuando se selecciona uno nuevo
-        languageSelector.setOnAction(event -> {
-            Idioma idiomaSeleccionado = languageSelector.getValue();
-            if (idiomaSeleccionado != null) {
-                try {
-                    messages = messageFetcher.apply(idiomaSeleccionado.getCodigo());
-                    updateUI();
-                } catch (Exception e) {
-                    showAlert("Error", "No se pudo cambiar el idioma.");
-                }
-            }
-        });
+        btnLogarse.setOnAction(event -> mostrarPantallaLogin());
     }
 
     private void updateUI() {
@@ -202,11 +165,11 @@ public class BibliotecaController {
                 _log.info("Total libros cargados: {}", libros.size());
             } catch (Exception e) {
                 _log.error("Error al deserializar libros: {}", e.getMessage(), e);
-                showAlert(messages.get("alert.error"), "Error al procesar los datos de los libros.");
+                showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "Error al procesar los datos de los libros.");
             }
         } else {
             _log.error("Error al obtener los libros de la API: respuesta nula o vacía");
-            showAlert(messages.get("alert.error"), "No se pudo cargar la lista de libros.");
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "No se pudo cargar la lista de libros.");
         }
     }
 
@@ -233,15 +196,15 @@ public class BibliotecaController {
                         _log.info("Libro encontrado: {}", libro.getTitulo());
                     } else {
                         _log.warn("LibroDTO nulo o sin ISBN para ISBN: {}", isbn);
-                        showAlert(messages.get("alert.error"), "Libro no encontrado.");
+                        showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "Libro no encontrado.");
                     }
                 } catch (Exception e) {
                     _log.error("Error al deserializar libro: {}", e.getMessage(), e);
-                    showAlert(messages.get("alert.error"), "Error al procesar el libro.");
+                    showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "Error al procesar el libro.");
                 }
             } else {
                 _log.error("Error al buscar libro con ISBN: {}", isbn);
-                showAlert(messages.get("alert.error"), "No se pudo encontrar el libro.");
+                showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "No se pudo encontrar el libro.");
             }
         } else {
             cargarLibrosDesdeApi();
@@ -261,91 +224,74 @@ public class BibliotecaController {
             pantallaCrearLibro.show();
         } catch (Exception e) {
             _log.error("Error al abrir pantalla de crear libro: {}", e.getMessage(), e);
-            showAlert(messages.get("alert.error"), "Error al abrir la pantalla de crear libro");
-        }
-    }
-    @FXML
-    private void abrirRegistroUsuario() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/registrarUsuario.fxml"));
-            Parent root = loader.load();
-
-            // Obtener el controlador para pasarle los mensajes
-            RegistrarUsuarioController controller = loader.getController();
-            controller.setMessages(messages); // <--- Esta línea es clave
-
-            Stage stage = new Stage();
-            stage.setTitle(messages.getOrDefault("form.registro", "Registro de Usuario")); // título traducido
-            stage.setScene(new Scene(root, 600, 400));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Error", "No se pudo abrir la pantalla para registrar usuario.");
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "Error al abrir la pantalla de crear libro");
         }
     }
 
-    @FXML
-    private void abrirPanelSesion() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/sesion.fxml"));
-            Parent root = loader.load();
-
-            SesionController sesionController = loader.getController();
-            sesionController.setMessages(messages); // importante: después de load()
-            sesionController.setBibliotecaController(this);
-
-            Stage stage = new Stage();
-            stage.setTitle("Iniciar Sesión");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Error", "No se pudo abrir el panel de sesión.");
+    private void openPantallaModificarLibro() {
+        Libro libroSeleccionado = tablaLibros.getSelectionModel().getSelectedItem();
+        if (libroSeleccionado == null) {
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), messages.get("alert.no.seleccionado"));
+            return;
         }
-    }
-
-    public void mostrarBotonesUsuario() {
-        btnRegistrarUsuario.setVisible(true);
-    }
-
-    @FXML
-    private void abrirModificarUsuario() {
+        PantallaModificarLibro pantallaModificarLibro = new PantallaModificarLibro(libro -> cargarLibrosDesdeApi(), libroSeleccionado, messages);
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/modificarUsuario.fxml"));
-            Parent root = loader.load();
-
-            ModificarUsuarioController controller = loader.getController();
-            controller.setMessages(messages);
-
-            Stage stage = new Stage();
-            stage.setTitle("Modificar Usuario");
-            stage.setScene(new Scene(root, 600, 400));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+            pantallaModificarLibro.show();
+        } catch (Exception e) {
+            _log.error("Error al abrir pantalla de modificar libro: {}", e.getMessage(), e);
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), messages.get("alert.error.abrir.pantalla.modificarlibro"));
         }
     }
 
     private void eliminarLibro() {
         Libro libroSeleccionado = tablaLibros.getSelectionModel().getSelectedItem();
-        if (libroSeleccionado != null) {
-            boolean eliminado = false;
+        if (libroSeleccionado == null) {
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), messages.get("alert.no.seleccionado"));
+            return;
+        }
+
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle(messages.get("alert.confirmacion"));
+        confirmAlert.setHeaderText(null);
+        confirmAlert.setContentText(messages.get("alert.confirmar.eliminar"));
+        Optional<ButtonType> result = confirmAlert.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                eliminado = apiClient.eliminarLibroPorId(libroSeleccionado.getLibroId());
+                boolean eliminado = apiClient.eliminarLibroPorId(libroSeleccionado.getLibroId());
+                if (eliminado) {
+                    libros.remove(libroSeleccionado);
+                    cargarLibrosDesdeApi();
+                    _log.info("Libro eliminado: {}", libroSeleccionado.getTitulo());
+                    showAlert(Alert.AlertType.INFORMATION, messages.get("alert.exito"), messages.get("alert.libro.eliminado"));
+                }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                if (e.getMessage().contains("asociado a registros de historial")) {
+                    Alert historialAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                    historialAlert.setTitle(messages.get("alert.confirmacion"));
+                    historialAlert.setHeaderText(null);
+                    historialAlert.setContentText(messages.get("alert.libro.noeliminado.historial"));
+                    Optional<ButtonType> historialResult = historialAlert.showAndWait();
+
+                    if (historialResult.isPresent() && historialResult.get() == ButtonType.OK) {
+                        try {
+                            boolean eliminadoForzado = apiClient.eliminarLibroPorId(libroSeleccionado.getLibroId(), true);
+                            if (eliminadoForzado) {
+                                libros.remove(libroSeleccionado);
+                                cargarLibrosDesdeApi();
+                                _log.info("Libro con historial eliminado: {}", libroSeleccionado.getTitulo());
+                                showAlert(Alert.AlertType.INFORMATION, messages.get("alert.exito"), messages.get("alert.libro.eliminado"));
+                            }
+                        } catch (Exception ex) {
+                            _log.error("Error al eliminar el libro con historial: {}", ex.getMessage());
+                            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), ex.getMessage());
+                        }
+                    }
+                } else {
+                    _log.error("Error al eliminar el libro: {}", e.getMessage());
+                    showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), e.getMessage());
+                }
             }
-            if (eliminado) {
-                libros.remove(libroSeleccionado);
-                cargarLibrosDesdeApi();
-                _log.info("Libro eliminado: {}", libroSeleccionado.getTitulo());
-            } else {
-                _log.error("No se pudo eliminar el libro con ISBN: {}", libroSeleccionado.getIsbn());
-                showAlert(messages.get("alert.error"), "No se pudo eliminar el libro");
-            }
-        } else {
-            _log.warn("No se seleccionó ningún libro para eliminar");
-            showAlert(messages.get("alert.error"), messages.get("alert.no.seleccionado"));
         }
     }
 
@@ -377,7 +323,7 @@ public class BibliotecaController {
 
         if (result.isEmpty() || result.get() != ButtonType.OK) {
             _log.info("Inicio de sesión cancelado por el usuario");
-            showAlert(messages.get("alert.error"), messages.get("alert.login.cancelado"));
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), messages.get("alert.login.cancelado"));
             return;
         }
 
@@ -386,7 +332,7 @@ public class BibliotecaController {
 
         if (username.trim().isEmpty() || password.trim().isEmpty()) {
             _log.warn("Intento de login con campos vacíos");
-            showAlert(messages.get("alert.error"), messages.get("alert.completa.campos"));
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), messages.get("alert.completa.campos"));
             return;
         }
 
@@ -397,13 +343,13 @@ public class BibliotecaController {
 
         if (!sanitizedUsername.matches("^[a-zA-Z0-9._-]{3,20}$")) {
             _log.warn("Username inválido: {}", sanitizedUsername);
-            showAlert(messages.get("alert.error"), messages.get("alert.username.invalido"));
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), messages.get("alert.username.invalido"));
             return;
         }
 
         if (password.length() < 4 || password.length() > 50) {
             _log.warn("Longitud de contraseña inválida para usuario: {}", sanitizedUsername);
-            showAlert(messages.get("alert.error"), messages.get("alert.password.invalido"));
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), messages.get("alert.password.invalido"));
             return;
         }
 
@@ -413,36 +359,18 @@ public class BibliotecaController {
             cargarLibrosDesdeApi();
         } else {
             _log.warn("Login fallido para usuario: {}", sanitizedUsername);
-            showAlert(messages.get("alert.error"), "Login fallido");
+            showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "Login fallido");
         }
     }
 
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
         alert.setTitle(title);
-        alert.setContentText(content);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
         alert.showAndWait();
     }
-    public static class Idioma {
-        private final String codigo;
-        private final String nombre;
-        private final Image icono;
 
-        public Idioma(String codigo, String nombre, Image icono) {
-            this.codigo = codigo;
-            this.nombre = nombre;
-            this.icono = icono;
-        }
 
-        public String getCodigo() { return codigo; }
 
-        public String getNombre() { return nombre; }
-
-        public Image getIcono() { return icono; }
-
-        @Override
-        public String toString() {
-            return nombre;
-        }
-    }
 }
