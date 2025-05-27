@@ -1,7 +1,6 @@
 package cat.ferreria.dekstop.model.clazz;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 
 public class Libro {
     private final StringProperty isbn;

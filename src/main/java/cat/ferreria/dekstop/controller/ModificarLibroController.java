@@ -7,6 +7,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -16,14 +18,12 @@ public class ModificarLibroController {
     @FXML private TextField txtTitulo;
     @FXML private TextField txtAutor;
     @FXML private TextField txtCategoria;
-    @FXML private TextField txtCantidad;
     @FXML private ComboBox<String> cmbEstadoUso;
     @FXML private Button btnGuardar;
     @FXML private Label isbnLabel;
     @FXML private Label tituloLabel;
     @FXML private Label autorLabel;
     @FXML private Label categoriaLabel;
-    @FXML private Label cantidadLabel;
     @FXML private Label estadoLabel;
 
     private ApiClient apiClient = new ApiClient();
@@ -31,12 +31,11 @@ public class ModificarLibroController {
     private Libro libroSeleccionado;
     private Map<String, String> messages;
 
-    public void setOnLibroModificado(Consumer<Libro> onLibroModificado) {
-        this.onLibroModificado = onLibroModificado;
-    }
+    @FXML
+    private void initialize() {
+        cmbEstadoUso.getItems().addAll("Disponible", "Prestado");
+        btnGuardar.setOnAction(event -> guardarLibro());
 
-    public void setLibroSeleccionado(Libro libroSeleccionado) {
-        this.libroSeleccionado = libroSeleccionado;
     }
 
     public void setMessages(Map<String, String> messages) {
@@ -44,34 +43,26 @@ public class ModificarLibroController {
         updateUI();
     }
 
-    @FXML
-    private void initialize() {
-        cmbEstadoUso.getItems().addAll("Disponible", "Prestado");
-        btnGuardar.setOnAction(event -> guardarLibro());
+    public void setOnLibroModificado(Consumer<Libro> onLibroModificado) {
+        this.onLibroModificado = onLibroModificado;
+    }
 
-        txtCantidad.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                txtCantidad.setText(oldValue);
-            } else {
-                try {
-                    int value = Integer.parseInt(newValue);
-                    if (value < 0 || value > 99) {
-                        txtCantidad.setText(oldValue);
-                    }
-                } catch (NumberFormatException e) {
-                    txtCantidad.setText(oldValue);
-                }
-            }
-        });
+    public void setLibroSeleccionado(Libro libroSeleccionado) {
+        this.libroSeleccionado = libroSeleccionado;
+        populateFields();
+    }
 
-        if (libroSeleccionado != null) {
-            txtISBN.setText(libroSeleccionado.getIsbn());
-            txtTitulo.setText(libroSeleccionado.getTitulo());
-            txtAutor.setText(libroSeleccionado.getAutor());
-            txtCategoria.setText(libroSeleccionado.getCategoria());
-            cmbEstadoUso.setValue(libroSeleccionado.getEstado());
-            txtISBN.setDisable(true);
+    private void populateFields() {
+        if (libroSeleccionado == null){
+            return;
         }
+
+        txtISBN.setText(libroSeleccionado.getIsbn());
+        txtISBN.setDisable(true);
+        txtTitulo.setText(libroSeleccionado.getTitulo());
+        txtAutor.setText(libroSeleccionado.getAutor());
+        txtCategoria.setText(libroSeleccionado.getCategoria());
+        cmbEstadoUso.setValue(libroSeleccionado.getEstado());
     }
 
     private void updateUI() {
@@ -81,7 +72,6 @@ public class ModificarLibroController {
         tituloLabel.setText(messages.get("libro.titulo"));
         autorLabel.setText(messages.get("libro.autor"));
         categoriaLabel.setText(messages.get("libro.categoria"));
-        cantidadLabel.setText(messages.get("libro.cantidad"));
         estadoLabel.setText(messages.get("libro.estado"));
     }
 
@@ -90,52 +80,29 @@ public class ModificarLibroController {
         String titulo = txtTitulo.getText().trim();
         String autor = txtAutor.getText().trim();
         String categoria = txtCategoria.getText().trim();
-        String estado = cmbEstadoUso.getSelectionModel().getSelectedItem();
-
-        if (!isbn.equals(libroSeleccionado.getIsbn())) {
-            showAlert(messages.get("alert.error"), "El ISBN no puede modificarse");
-            return;
-        }
-
-        if (txtCantidad.getText().isEmpty()) {
-            showAlert(messages.get("alert.error"), messages.get("alert.cantidad.invalida"));
-            return;
-        }
-
-        int cantidad;
-        try {
-            cantidad = Integer.parseInt(txtCantidad.getText());
-            if (cantidad < 0 || cantidad > 99) {
-                showAlert(messages.get("alert.error"), messages.get("alert.cantidad.rango"));
-                return;
-            }
-        } catch (NumberFormatException e) {
-            showAlert(messages.get("alert.error"), messages.get("alert.cantidad.numero"));
-            return;
-        }
+        String estado = cmbEstadoUso.getValue();
 
         if (titulo.isEmpty() || autor.isEmpty() || categoria.isEmpty() || estado == null) {
             showAlert(messages.get("alert.error"), messages.get("alert.completa.campos"));
             return;
         }
 
-        LibroDTO libroDTO = new LibroDTO();
-        libroDTO.setLibroId(libroSeleccionado.getLibroId());
-        libroDTO.setIsbn(isbn);
-        libroDTO.setTitulo(titulo);
-        libroDTO.setAutor(autor);
-        libroDTO.setCategoria(categoria);
-        libroDTO.setEstadoUso("Disponible".equals(estado));
+        LibroDTO dto = new LibroDTO();
+        dto.setLibroId(libroSeleccionado.getLibroId());
+        dto.setIsbn(isbn);
+        dto.setTitulo(titulo);
+        dto.setAutor(autor);
+        dto.setCategoria(categoria);
+        dto.setEstadoUso("Disponible".equals(estado));
 
         try {
-            LibroDTO response = apiClient.updateLibro(libroDTO);
+            LibroDTO actualizado = apiClient.updateLibro(dto);
             showAlert(messages.get("alert.exito"), messages.get("alert.exito"));
             if (onLibroModificado != null) {
-                Libro libro = new Libro(libroSeleccionado.getLibroId(), isbn, titulo, autor, categoria, estado);
+                Libro libro = new Libro(actualizado.getLibroId(), isbn, titulo, autor, categoria, estado);
                 onLibroModificado.accept(libro);
             }
-            Stage stage = (Stage) btnGuardar.getScene().getWindow();
-            stage.close();
+            ((Stage) btnGuardar.getScene().getWindow()).close();
         } catch (Exception e) {
             showAlert(messages.get("alert.error"), messages.get("alert.libro.noanyadido"));
         }

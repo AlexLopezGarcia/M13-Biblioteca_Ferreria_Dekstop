@@ -15,14 +15,12 @@ public class CrearLibroController {
     @FXML private TextField txtTitulo;
     @FXML private TextField txtAutor;
     @FXML private TextField txtCategoria;
-    @FXML private TextField txtCantidad;
     @FXML private ComboBox<String> cmbEstadoUso;
     @FXML private Button btnGuardar;
     @FXML private Label isbnLabel;
     @FXML private Label tituloLabel;
     @FXML private Label autorLabel;
     @FXML private Label categoriaLabel;
-    @FXML private Label cantidadLabel;
     @FXML private Label estadoLabel;
 
     private ApiClient apiClient = new ApiClient();
@@ -43,20 +41,6 @@ public class CrearLibroController {
         cmbEstadoUso.getItems().addAll("Disponible", "Prestado");
         btnGuardar.setOnAction(event -> guardarLibro());
 
-        txtCantidad.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                txtCantidad.setText(oldValue);
-            } else {
-                try {
-                    int value = Integer.parseInt(newValue);
-                    if (value < 0 || value > 99) {
-                        txtCantidad.setText(oldValue);
-                    }
-                } catch (NumberFormatException e) {
-                    txtCantidad.setText(oldValue);
-                }
-            }
-        });
     }
 
     private void updateUI() {
@@ -66,7 +50,6 @@ public class CrearLibroController {
         tituloLabel.setText(messages.get("libro.titulo"));
         autorLabel.setText(messages.get("libro.autor"));
         categoriaLabel.setText(messages.get("libro.categoria"));
-        cantidadLabel.setText(messages.get("libro.cantidad"));
         estadoLabel.setText(messages.get("libro.estado"));
     }
 
@@ -87,28 +70,6 @@ public class CrearLibroController {
         String autor = txtAutor.getText().trim();
         String categoria = txtCategoria.getText().trim();
         String estado = cmbEstadoUso.getSelectionModel().getSelectedItem();
-
-        if (txtCantidad.getText().isEmpty()) {
-            showAlert(messages.get("alert.error"), messages.get("alert.cantidad.invalida"));
-            return;
-        }
-
-        int cantidad;
-        try {
-            cantidad = Integer.parseInt(txtCantidad.getText());
-            if (cantidad < 0 || cantidad > 99) {
-                showAlert(messages.get("alert.error"), messages.get("alert.cantidad.rango"));
-                return;
-            }
-        } catch (NumberFormatException e) {
-            showAlert(messages.get("alert.error"), messages.get("alert.cantidad.numero"));
-            return;
-        }
-
-        if (titulo.isEmpty() || autor.isEmpty() || categoria.isEmpty() || estado == null) {
-            showAlert(messages.get("alert.error"), messages.get("alert.completa.campos"));
-            return;
-        }
 
         LibroDTO libroDTO = new LibroDTO();
         libroDTO.setIsbn(isbn);
