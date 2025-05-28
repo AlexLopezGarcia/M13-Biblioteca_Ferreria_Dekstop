@@ -6,6 +6,8 @@ import cat.ferreria.dekstop.model.dtos.LibroDTO;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -18,6 +20,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class ApiClient {
     private static final String BASE_URL = "http://localhost:9090";
+    private static final Logger _log = LoggerFactory.getLogger(ApiClient.class);
+
 
     public String autenticar(String usuario, String contrasenya) {
         try {
@@ -149,7 +153,7 @@ public class ApiClient {
     }
 
     public String fetchUsuarios() {
-        return fetchData("/usuarios").join();
+        return fetchData("/public/usuarios").join();
     }
 
     public String fetchLibroByIsbn(String isbn) {
@@ -197,7 +201,7 @@ public class ApiClient {
         jsonUsuario.addProperty("contrasenya", usuario.getContrasena());
 
         String usuarioJson = jsonUsuario.toString();
-
+        _log.info("usuarioJson: " + usuarioJson);
         try {
             URL url = new URL(apiUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -211,6 +215,7 @@ public class ApiClient {
             }
 
             int responseCode = conn.getResponseCode();
+            _log.info("responseCode: " + responseCode);
             return responseCode == 201; // Código 201 = Creado correctamente
         } catch (Exception e) {
             e.printStackTrace();
