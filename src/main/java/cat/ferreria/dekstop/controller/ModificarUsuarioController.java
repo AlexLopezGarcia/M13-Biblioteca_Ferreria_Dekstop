@@ -92,7 +92,6 @@ public class ModificarUsuarioController {
                         messages.get("alert.seleccion.unica.titulo"),
                         messages.get("alert.seleccion.unica.cabecera"),
                         messages.get("alert.seleccion.unica.contenido"));
-
             } else {
                 mostrarVentanaEdicion(seleccionados.get(0));
             }
@@ -102,61 +101,66 @@ public class ModificarUsuarioController {
             ObservableList<Usuario> seleccionados = tablaUsuarios.getSelectionModel().getSelectedItems();
             if (seleccionados.isEmpty()) {
                 mostrarAlerta(Alert.AlertType.WARNING,
-                        messages.get("alert.seleccion.unica.titulo"),
-                        messages.get("alert.seleccion.unica.cabecera"),
-                        messages.get("alert.seleccion.unica.contenido"));
+                        messages.get("alert.nada.seleccionado.titulo"),
+                        messages.get("alert.nada.seleccionado.cabecera"),
+                        messages.get("alert.nada.seleccionado.contenido"));
                 return;
             }
 
             Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmacion.setTitle("Confirmar eliminación");
-            confirmacion.setHeaderText("¿Estás seguro de que deseas eliminar los usuarios seleccionados?");
-            confirmacion.setContentText("Esta acción no se puede deshacer.");
+            confirmacion.setTitle(messages.get("alert.confirmar.eliminacion.titulo"));
+            confirmacion.setHeaderText(messages.get("alert.confirmar.eliminacion.cabecera"));
+            confirmacion.setContentText(messages.get("alert.confirmar.eliminacion.contenido"));
 
             confirmacion.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
+                    boolean error = false;
                     for (Usuario usuario : seleccionados) {
-                        apiClient.eliminarUsuarioEnAPI(usuario.getDni());
+                        boolean eliminado = apiClient.eliminarUsuarioEnAPI(usuario.getDni());
+                        if (!eliminado) {
+                            error = true;
+                        }
                     }
-                    mostrarAlerta(Alert.AlertType.WARNING,
-                            messages.get("alert.seleccion.unica.titulo"),
-                            messages.get("alert.seleccion.unica.cabecera"),
-                            messages.get("alert.seleccion.unica.contenido"));
-                    cargarUsuariosDesdeApi();
+
+                    if (error) {
+                        mostrarAlerta(Alert.AlertType.ERROR,
+                                messages.get("alert.no.modificado.titulo"),
+                                messages.get("alert.no.modificado.cabecera"),
+                                messages.get("alert.no.modificado.contenido"));
+                    } else {
+                        mostrarAlerta(Alert.AlertType.INFORMATION,
+                                messages.get("alert.exito.eliminacion"),
+                                messages.get("alert.exito.eliminacion"),
+                                messages.get("alert.exito.eliminacion"));
+                        cargarUsuariosDesdeApi();
+                    }
                 }
             });
         });
     }
+
+
     private void mostrarVentanaEdicion(Usuario usuario) {
         Dialog<UsuarioDTO> dialog = new Dialog<>();
-        dialog.setTitle("Editar Usuario");
+        dialog.setTitle(messages.get("button.editar.usuario"));
 
-        Label labelDni = new Label("DNI:");
         TextField tfDni = new TextField(usuario.getDni());
-
-        Label labelNombre = new Label("Nombre:");
         TextField tfNombre = new TextField(usuario.getNombre());
-
-        Label labelCorreo = new Label("Correo:");
         TextField tfCorreo = new TextField(usuario.getCorreoElectronico());
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
-
-        grid.add(labelDni, 0, 0);
-        grid.add(tfDni, 1, 0);
-        grid.add(labelNombre, 0, 1);
-        grid.add(tfNombre, 1, 1);
-        grid.add(labelCorreo, 0, 2);
-        grid.add(tfCorreo, 1, 2);
+        grid.addRow(0, new Label(messages.get("label.dni")), tfDni);
+        grid.addRow(1, new Label(messages.get("label.nombre")), tfNombre);
+        grid.addRow(2, new Label(messages.get("label.correo")), tfCorreo);
 
         dialog.getDialogPane().setContent(grid);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == ButtonType.OK) {
+        dialog.setResultConverter(button -> {
+            if (button == ButtonType.OK) {
                 String dni = tfDni.getText().trim();
                 String nombre = tfNombre.getText().trim();
                 String correo = tfCorreo.getText().trim();
@@ -172,11 +176,9 @@ public class ModificarUsuarioController {
                 if (nombre.length() < 2 || nombre.length() > 30) {
                     errores.append(messages.get("alert.validacion.nombre")).append("\n");
                 }
-                String regexCorreo = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-                if (!Pattern.matches(regexCorreo, correo)) {
+                if (!Pattern.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$", correo)) {
                     errores.append(messages.get("alert.validacion.correo")).append("\n");
                 }
-
 
                 if (errores.length() > 0) {
                     mostrarAlerta(Alert.AlertType.ERROR,
@@ -186,29 +188,35 @@ public class ModificarUsuarioController {
                     return null;
                 }
 
-
                 return new UsuarioDTO(dni, nombre, correo);
             }
             return null;
         });
 
-        dialog.showAndWait().ifPresent(Usuario -> {
-            boolean modificado = apiClient.modificarUsuarioEnAPI(usuario);
+        dialog.showAndWait().ifPresent(usuarioDTO -> {
+            Usuario usuarioModificado = new Usuario(
+                    usuarioDTO.getDni(),
+                    usuarioDTO.getNombre(),
+                    usuario.getContrasena(),  // conservar contraseña
+                    usuarioDTO.getCorreoElectronico()
+            );
+
+            boolean modificado = apiClient.modificarUsuarioEnAPI(usuario.getDni(), usuarioModificado);
+
             if (modificado) {
-                mostrarAlerta(Alert.AlertType.WARNING,
-                        messages.get("alert.seleccion.unica.titulo"),
-                        messages.get("alert.seleccion.unica.cabecera"),
-                        messages.get("alert.seleccion.unica.contenido"));
+                mostrarAlerta(Alert.AlertType.INFORMATION,
+                        messages.get("alert.modificado.titulo"),
+                        messages.get("alert.modificado.cabecera"),
+                        messages.get("alert.modificado.contenido"));
                 cargarUsuariosDesdeApi();
             } else {
-                mostrarAlerta(Alert.AlertType.WARNING,
-                        messages.get("alert.seleccion.unica.titulo"),
-                        messages.get("alert.seleccion.unica.cabecera"),
-                        messages.get("alert.seleccion.unica.contenido"));
+                mostrarAlerta(Alert.AlertType.ERROR,
+                        messages.get("alert.no.modificado.titulo"),
+                        messages.get("alert.no.modificado.cabecera"),
+                        messages.get("alert.no.modificado.contenido"));
             }
         });
     }
-
 
     private void cargarUsuariosDesdeApi() {
         String jsonUsuarios = apiClient.fetchUsuarios();
@@ -219,7 +227,6 @@ public class ModificarUsuarioController {
             return;
         }
 
-        // Validación básica del formato JSON esperado
         if (!jsonUsuarios.trim().startsWith("[")) {
             mostrarAlerta(Alert.AlertType.ERROR,
                     "Error", "Formato inesperado",

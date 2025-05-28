@@ -149,8 +149,7 @@ public class ApiClient {
     }
 
     public String fetchUsuarios() {
-        String apiUrl = "http://localhost:9090/usuarios";
-        return String.valueOf(fetchData(apiUrl));
+        return fetchData("/usuarios").join();
     }
 
     public String fetchLibroByIsbn(String isbn) {
@@ -218,27 +217,28 @@ public class ApiClient {
             return false;
         }
     }
-    public boolean modificarUsuarioEnAPI(Usuario usuario) {
-        String apiUrl = "http://localhost:9090/usuarios";
-        Gson gson = new Gson();
+    public boolean modificarUsuarioEnAPI(String dniOriginal, Usuario usuario) {
+        String apiUrl = "http://localhost:9090/usuarios/" + dniOriginal;
 
         JsonObject jsonUsuario = new JsonObject();
+        jsonUsuario.addProperty("dni", usuario.getDni());
         jsonUsuario.addProperty("nombre", usuario.getNombre());
         jsonUsuario.addProperty("correoElectronico", usuario.getCorreoElectronico());
         jsonUsuario.addProperty("contrasenya", usuario.getContrasena());
-
-        String usuarioJson = jsonUsuario.toString();
 
         try {
             URL url = new URL(apiUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("PUT");
             conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
 
+            if (AuthContext.getJwtToken() != null) {
+                conn.setRequestProperty("Authorization", "Bearer " + AuthContext.getJwtToken());
+            }
+
+            conn.setDoOutput(true);
             try (OutputStream os = conn.getOutputStream()) {
-                byte[] input = usuarioJson.getBytes(StandardCharsets.UTF_8);
-                os.write(input, 0, input.length);
+                os.write(jsonUsuario.toString().getBytes(StandardCharsets.UTF_8));
             }
 
             int responseCode = conn.getResponseCode();
@@ -248,14 +248,18 @@ public class ApiClient {
             return false;
         }
     }
-    public boolean eliminarUsuarioEnAPI(String correo) {
-        String apiUrl = "http://localhost:9090/usuarios";
+    public boolean eliminarUsuarioEnAPI(String dni) {
+        String apiUrl = "http://localhost:9090/usuarios/" + dni;
 
         try {
             URL url = new URL(apiUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("DELETE");
             conn.setRequestProperty("Accept", "application/json");
+
+            if (AuthContext.getJwtToken() != null) {
+                conn.setRequestProperty("Authorization", "Bearer " + AuthContext.getJwtToken());
+            }
 
             int responseCode = conn.getResponseCode();
             return responseCode == 200 || responseCode == 204;
@@ -264,6 +268,7 @@ public class ApiClient {
             return false;
         }
     }
+
     public boolean validarCredencialesEnAPI(String correo, String contrasena) {
         String apiUrl = "http://localhost:9090/usuarios/sesion";
 

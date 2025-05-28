@@ -20,7 +20,7 @@
             <Button fx:id="btnModificarUsuario" onAction="#abrirModificarUsuario" text="Modificar Usuario" />
 
             <ComboBox fx:id="languageSelector" prefWidth="150" />
-            <Button fx:id="btnLogarse" onAction="#abrirPanelSesion" />
+            <Button fx:id="btnLogarse" onAction="#mostrarPantallaLogin" />
         </HBox>
     </top>
 

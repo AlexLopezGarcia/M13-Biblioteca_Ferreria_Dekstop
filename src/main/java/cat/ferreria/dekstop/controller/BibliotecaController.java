@@ -8,11 +8,18 @@ import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -39,6 +46,7 @@ public class BibliotecaController {
     @FXML private Button btnRegistrarPrestamo;
     @FXML private Button btnLogarse;
     @FXML private Button btnRegistrarUsuario;
+    @FXML private Button btnModificarUsuario;
     @FXML private ComboBox<String> languageSelector;
     @FXML private Label isbnLabel;
     @FXML private Label tituloLabel;
@@ -83,15 +91,82 @@ public class BibliotecaController {
 
         tablaLibros.setItems(libros);
 
+        // Configurar el ComboBox de idioma
         languageSelector.setItems(FXCollections.observableArrayList("es", "ca"));
         languageSelector.setValue("es");
+
+        // Mostrar imágenes en las celdas del ComboBox
+        languageSelector.setCellFactory(lv -> new ListCell<>() {
+            private final ImageView imageView = new ImageView();
+
+            @Override
+            protected void updateItem(String lang, boolean empty) {
+                super.updateItem(lang, empty);
+                if (empty || lang == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    String imagePath = switch (lang) {
+                        case "es" -> "/img/espana.png";
+                        case "ca" -> "/img/catalunya.png";
+                        default -> null;
+                    };
+
+                    if (imagePath != null) {
+                        Image image = new Image(getClass().getResourceAsStream(imagePath));
+                        imageView.setImage(image);
+                        imageView.setFitWidth(24);
+                        imageView.setFitHeight(16);
+                        setGraphic(imageView);
+                    } else {
+                        setGraphic(null);
+                    }
+
+                    setText(lang.toUpperCase());
+                }
+            }
+        });
+
+        languageSelector.setButtonCell(new ListCell<>() {
+            private final ImageView imageView = new ImageView();
+
+            @Override
+            protected void updateItem(String lang, boolean empty) {
+                super.updateItem(lang, empty);
+                if (empty || lang == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    String imagePath = switch (lang) {
+                        case "es" -> "/img/espana.png";
+                        case "ca" -> "/img/catalunya.png";
+                        default -> null;
+                    };
+
+                    if (imagePath != null) {
+                        Image image = new Image(getClass().getResourceAsStream(imagePath));
+                        imageView.setImage(image);
+                        imageView.setFitWidth(24);
+                        imageView.setFitHeight(16);
+                        setGraphic(imageView);
+                    } else {
+                        setGraphic(null);
+                    }
+
+                    setText(lang.toUpperCase());
+                }
+            }
+        });
+
         languageSelector.setOnAction(event -> {
             String selectedLang = languageSelector.getValue();
             try {
                 messages = messageFetcher.apply(selectedLang);
                 updateUI();
             } catch (Exception e) {
-                showAlert(Alert.AlertType.ERROR, messages != null ? messages.get("alert.error") : "Error", "No se pudo cambiar el idioma");
+                showAlert(Alert.AlertType.ERROR,
+                        messages != null ? messages.get("alert.error") : "Error",
+                        "No se pudo cambiar el idioma");
             }
         });
 
@@ -103,6 +178,8 @@ public class BibliotecaController {
         }
 
         cargarLibrosDesdeApi();
+        btnRegistrarUsuario.setVisible(true);
+        btnModificarUsuario.setVisible(true);
 
         btnAnyadir.setOnAction(event -> openPantallaCrearLibro());
         btnModificar.setOnAction(event -> openPantallaModificarLibro());
@@ -110,7 +187,10 @@ public class BibliotecaController {
         btnEliminar.setOnAction(event -> eliminarLibro());
         btnRecargar.setOnAction(event -> recargarLibros());
         btnLogarse.setOnAction(event -> mostrarPantallaLogin());
+        btnRegistrarUsuario.setOnAction(event -> abrirRegistroUsuario());
+        btnModificarUsuario.setOnAction(event -> abrirModificarUsuario());
     }
+
 
     private void updateUI() {
         if (messages == null) return;
@@ -295,6 +375,7 @@ public class BibliotecaController {
         }
     }
 
+    @FXML
     private void mostrarPantallaLogin() {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle(messages.get("login.title"));
@@ -361,6 +442,48 @@ public class BibliotecaController {
             _log.warn("Login fallido para usuario: {}", sanitizedUsername);
             showAlert(Alert.AlertType.ERROR, messages.get("alert.error"), "Login fallido");
         }
+    }
+
+    @FXML
+    private void abrirRegistroUsuario() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/registrarUsuario.fxml"));
+            Parent root = loader.load();
+
+            RegistrarUsuarioController controller = loader.getController();
+            controller.setMessages(messages); // Pasa los mensajes para internacionalización si es necesario
+
+            Stage stage = new Stage();
+            stage.setTitle(messages != null ? messages.get("label.registrar.usuario") : "Registrar Usuario");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "No se pudo abrir el formulario de registro.");
+        }
+    }
+    @FXML
+    private void abrirModificarUsuario() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/modificarUsuario.fxml"));
+            Parent root = loader.load();
+
+            ModificarUsuarioController controller = loader.getController();
+            controller.setMessages(messages);
+
+            Stage stage = new Stage();
+            stage.setTitle(messages != null ? messages.get("button.modificar.usuario") : "Modificar Usuario");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "No se pudo abrir el panel de modificación de usuarios.");
+        }
+    }
+
+    public void mostrarBotonesUsuario() {
+        btnRegistrarUsuario.setVisible(true);
+        btnModificarUsuario.setVisible(true);
     }
 
     private void showAlert(Alert.AlertType alertType, String title, String message) {
