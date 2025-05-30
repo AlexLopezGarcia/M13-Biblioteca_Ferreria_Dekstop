@@ -9,18 +9,15 @@
           xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="cat.ferreria.dekstop.controller.PrestamoController">
 
-    <Label text="ID del libro:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <Label text="ISBN del libro:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
     <TextField fx:id="libroIdField" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
-    <HBox spacing="20" GridPane.columnIndex="1" GridPane.rowIndex="1" alignment="CENTER">
-        <children>
-            <Button fx:id="btnPrestar" text="Prestar" prefWidth="120"/>
-            <Button fx:id="btnDevolver" text="Devolver" prefWidth="120"/>
-        </children>
-    </HBox>
+    <Button fx:id="btnPrestar" text="Prestar" prefWidth="120"
+            GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.halignment="LEFT"/>
 
     <Label fx:id="mensajeLabel" text="" GridPane.columnIndex="0" GridPane.rowIndex="2"
-           GridPane.columnSpan="2" wrapText="true" style="-fx-text-fill: black; -fx-font-size: 14px;"/>
+           GridPane.columnSpan="2" wrapText="true"
+           style="-fx-text-fill: black; -fx-font-size: 14px;"/>
 
     <columnConstraints>
         <ColumnConstraints halignment="RIGHT"/>
@@ -32,4 +29,5 @@
         <RowConstraints/>
         <RowConstraints/>
     </rowConstraints>
+
 </GridPane>
