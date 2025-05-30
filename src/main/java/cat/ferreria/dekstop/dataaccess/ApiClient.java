@@ -13,6 +13,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Acceso a la API REST de la biblioteca.
+ *
+ * @author alexl
+ * @date 18/02/2025
+ * */
+
 public class ApiClient {
     private static final String BASE_URL = "http://localhost:9090";
 

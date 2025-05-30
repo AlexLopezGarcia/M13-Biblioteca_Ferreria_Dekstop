@@ -12,6 +12,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * Controlador para pdoer modificar un libro existente.
+ *
+ * @author iker
+ * @date 16/02/2025
+ * */
 public class ModificarLibroController {
 
     @FXML private TextField txtISBN;

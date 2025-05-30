@@ -9,6 +9,13 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
+/**
+ * Controlador de envios de correos electronicos para poder restablecer la contraseña.
+ *
+ * @author alexl
+ * @date 15/05/2025
+ * */
+
 public class EmailController {
     public static void main(String args[]){
         String para = "";                                //Destinatario

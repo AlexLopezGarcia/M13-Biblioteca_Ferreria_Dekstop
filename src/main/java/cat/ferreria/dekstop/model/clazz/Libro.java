@@ -2,6 +2,13 @@ package cat.ferreria.dekstop.model.clazz;
 
 import javafx.beans.property.*;
 
+/**
+ * Entidad de libro que se utilizara para la trata de la información
+ *
+ * @author alexl
+ * @date 05/02/2025
+ * */
+
 public class Libro {
     private final StringProperty isbn;
     private final StringProperty titulo;

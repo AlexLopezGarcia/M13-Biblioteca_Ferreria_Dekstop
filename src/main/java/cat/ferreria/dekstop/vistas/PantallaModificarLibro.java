@@ -10,6 +10,15 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * PantallaModificarLibro es una clase que representa la pantalla para modificar un libro.
+ * Utiliza un controlador para manejar la lógica de modificación y una interfaz para notificar
+ * los cambios realizados en el libro.
+ *
+ * @author Iker Vargas
+ * @date 20/10/2024
+ * */
+
 public class PantallaModificarLibro {
 
     private final Consumer<Libro> onLibroModificado;

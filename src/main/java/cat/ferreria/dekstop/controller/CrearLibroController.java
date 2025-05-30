@@ -9,6 +9,14 @@ import javafx.stage.Stage;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * Controlador para la creación de un nuevo libro.
+ * Permite ingresar los detalles del libro y guardarlo en el sistema.
+ *
+ * @author alexl
+ * @date 16/02/2025
+ * */
+
 public class CrearLibroController {
 
     @FXML private TextField txtISBN;

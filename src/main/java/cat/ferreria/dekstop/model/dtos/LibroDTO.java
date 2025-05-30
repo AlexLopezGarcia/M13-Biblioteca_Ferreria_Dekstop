@@ -2,6 +2,13 @@ package cat.ferreria.dekstop.model.dtos;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Clase DTO para libro para utilizar en la comunicación con el servidor
+ *
+ * @author alexl
+ * @date 01/10/2024
+ * */
+
 public class LibroDTO {
     @SerializedName("libroId")
     private Long libroId;

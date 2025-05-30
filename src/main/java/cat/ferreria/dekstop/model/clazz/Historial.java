@@ -3,6 +3,13 @@ package cat.ferreria.dekstop.model.clazz;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+/**
+ * Entidad d'historial para la trata de información
+ *
+ * @author alexl
+ * @date 13/02/2025
+ * */
+
 public class Historial {
     private final StringProperty historialId;
     private final StringProperty dni;

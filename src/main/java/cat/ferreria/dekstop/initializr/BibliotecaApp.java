@@ -10,6 +10,13 @@ import javafx.stage.Stage;
 
 import java.util.Map;
 
+/**
+ * Lanzador de la aplicacion Biblioteca.
+ *
+ * @author alexl
+ * @date 10/02/2025
+ * */
+
 public class BibliotecaApp extends Application {
 
     private ApiClient apiClient = new ApiClient();

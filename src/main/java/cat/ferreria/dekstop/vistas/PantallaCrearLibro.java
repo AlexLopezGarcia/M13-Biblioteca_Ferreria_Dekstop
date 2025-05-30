@@ -9,6 +9,15 @@ import javafx.stage.Stage;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * PantallaCrearLibro es una clase que representa la pantalla para crear un nuevo libro.
+ * Utiliza un controlador para manejar la lógica de creación de libros y permite
+ * establecer un callback que se ejecutará cuando se cree un libro exitosamente.
+ *
+ * @author Iker Vargas
+ * @date 15/01/2024
+ * */
+
 public class PantallaCrearLibro {
 
     private Consumer<Libro> onLibroCreadoCallback;

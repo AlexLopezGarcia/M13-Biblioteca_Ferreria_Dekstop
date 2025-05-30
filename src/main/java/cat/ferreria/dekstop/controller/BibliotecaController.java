@@ -17,6 +17,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+/**
+ * Controlador principal de la aplicación Biblioteca.
+ * Maneja la interacción con la interfaz de usuario y las operaciones CRUD de libros.
+ *
+ * @author alexl
+ * @date 16/02/2025
+ * */
+
 public class BibliotecaController {
     private static final Logger _log = LoggerFactory.getLogger(BibliotecaController.class);
     @FXML private TextField emailField;
@@ -370,7 +378,5 @@ public class BibliotecaController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
-
 
 }

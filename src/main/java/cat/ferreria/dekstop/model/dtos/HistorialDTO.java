@@ -1,5 +1,12 @@
 package cat.ferreria.dekstop.model.dtos;
 
+/**
+ * Clase DTO para historial para utilizar en la comunicación con el servidor.
+ *
+ * @author alexl
+ * @date 01/10/2024
+ * */
+
 public class HistorialDTO {
     private int historialId;
     private String dni;
