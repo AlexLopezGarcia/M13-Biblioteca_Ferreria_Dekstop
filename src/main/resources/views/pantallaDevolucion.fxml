@@ -12,7 +12,6 @@
     <Label text="ISBN del libro:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
     <TextField fx:id="isbnField" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
-
     <Button fx:id="btnDevolver" text="Devolver" prefWidth="200"
             GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.halignment="CENTER"/>
 
